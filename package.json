@@ -1,0 +1,66 @@
+{
+  "name": "propline-mcp",
+  "version": "0.1.0",
+  "description": "Model Context Protocol server for the PropLine player props betting odds API. Exposes live odds, prop resolution, cross-book +EV, scores, and box-score stats as tool calls for Claude Desktop, Claude Code, and any MCP-compatible client.",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "claude-desktop",
+    "anthropic",
+    "sports",
+    "betting",
+    "odds",
+    "player-props",
+    "api",
+    "sportsbook",
+    "mlb",
+    "nba",
+    "nhl",
+    "nfl",
+    "soccer",
+    "ufc",
+    "bovada",
+    "draftkings",
+    "fanduel",
+    "pinnacle",
+    "prizepicks",
+    "dfs"
+  ],
+  "homepage": "https://prop-line.com",
+  "bugs": "https://github.com/proplineapi/propline-mcp/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/proplineapi/propline-mcp.git"
+  },
+  "license": "MIT",
+  "author": "PropLine <support@prop-line.com>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "propline-mcp": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js",
+    "dev": "tsup --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.39",
+    "tsup": "^8.3.0",
+    "typescript": "^5.6.0"
+  }
+}
