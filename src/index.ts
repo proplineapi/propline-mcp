@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.1";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -124,8 +124,11 @@ const tools: ToolDef[] = [
       "props for that event; otherwise returns bulk game-line odds for " +
       "the whole sport. Pass markets as a comma-separated list (e.g. " +
       "'h2h,spreads,totals' or 'player_points,player_rebounds'). " +
-      "Response includes a bookmakers[] array with all 5 books + " +
-      "PrizePicks DFS.",
+      "Response includes a bookmakers[] array across every book that " +
+      "carries the requested markets (currently up to 13: Bovada, " +
+      "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
+      "Underdog, PrizePicks, Kalshi, Polymarket, Matchbook, Smarkets " +
+      "— coverage varies by sport).",
     inputSchema: {
       type: "object",
       properties: {
@@ -137,12 +140,12 @@ const tools: ToolDef[] = [
         markets: {
           type: "string",
           description:
-            "Comma-separated market keys. Defaults to h2h on bulk; all on event.",
+            "Comma-separated market keys. Defaults to h2h on bulk; h2h,spreads,totals on event. Pass an explicit list to fetch player props (sport-specific — e.g. player_points,player_rebounds for NBA; pitcher_strikeouts,batter_home_runs for MLB).",
         },
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, unibet, prizepicks). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, underdog, prizepicks, kalshi, polymarket, matchbook, smarkets). Default returns all available.",
         },
       },
       required: ["sport_key"],
