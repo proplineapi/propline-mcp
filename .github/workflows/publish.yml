@@ -39,6 +39,9 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npm run typecheck
       - run: npm run build
+      # OIDC trusted publishing — no long-lived NPM_TOKEN.
+      # Auth: GitHub Actions OIDC token → npm registry validates against
+      # the Trusted Publisher config registered for this package on
+      # npmjs.com (Repository: proplineapi/propline-mcp, Workflow:
+      # publish.yml). Requires the `id-token: write` permission above.
       - run: npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
