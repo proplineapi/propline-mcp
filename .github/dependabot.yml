@@ -1,0 +1,28 @@
+version: 2
+
+# Supply-chain hardening: `cooldown` makes Dependabot wait 7 days before
+# opening an update PR for any newly published version. Catches malicious
+# version drops (Mini Shai-Hulud etc.) that the npm community typically
+# detects within 24–72h. Groups minor+patch into one PR per ecosystem to
+# keep PR noise manageable.
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 10
