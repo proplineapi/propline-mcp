@@ -19,6 +19,12 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
+      # Node 20 ships with npm 10.x; OIDC trusted publishing needs
+      # npm 11.5.1+. Without this, the publish step gets 404 on PUT
+      # because npm 10.x doesn't know how to exchange the GH OIDC
+      # token for an npm registry auth token.
+      - run: npm install -g npm@latest
+
       - name: Verify tag matches package version
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
