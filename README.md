@@ -27,6 +27,7 @@ The model uses these tools transparently:
 | `propline_get_odds` | Live odds — bulk by sport or full props per event |
 | `propline_get_odds_history` | Pro: full snapshot history per outcome |
 | `propline_get_scores` | Game scores + status (free) |
+| `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_get_player_history` | Player prop history with resolution |

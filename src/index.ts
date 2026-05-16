@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.1.1";
+export const VERSION = "0.2.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -205,6 +205,29 @@ const tools: ToolDef[] = [
       client.getScores(args.sport_key as string, {
         daysFrom: args.days_from as number | undefined,
       }),
+  },
+  {
+    name: "propline_get_resolution_summary",
+    description:
+      "Free-tier endpoint. Returns the factual volume of player props " +
+      "PropLine has graded against real box scores over the last N days " +
+      "(aggregated counts only): total graded/settled, games, sports " +
+      "covered, plus per-sport and top-market breakdowns. Useful for: " +
+      "'how much graded prop data does PropLine have, what's the " +
+      "coverage'. A coverage proof, never a profitability claim.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        days: {
+          type: "number",
+          description: "Look-back window, 1-90. Defaults to 30.",
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client.getResolutionSummary({ days: args.days as number | undefined }),
   },
   {
     name: "propline_get_event_stats",

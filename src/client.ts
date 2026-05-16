@@ -132,6 +132,12 @@ export class PropLineClient {
     });
   }
 
+  getResolutionSummary(opts: { days?: number } = {}): Promise<unknown> {
+    return this.request(`/v1/markets/resolution-summary`, {
+      days: opts.days,
+    });
+  }
+
   getEventStats(sportKey: string, eventId: string | number): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/events/${eventId}/stats`);
   }
