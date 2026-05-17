@@ -2,19 +2,19 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.proplineapi/propline-mcp",
   "title": "PropLine — Sports Betting Odds & Prop Resolution",
-  "description": "Live player props betting odds, cross-book +EV, prop resolution (every Over/Under graded against real box scores), scores, and box-score stats across MLB, NBA, NHL, NFL, soccer, UFC and 13 sportsbooks. The-odds-api compatible.",
+  "description": "Live sports betting odds, cross-book +EV, and graded player-prop resolution across 13 books.",
   "websiteUrl": "https://prop-line.com",
   "repository": {
     "url": "https://github.com/proplineapi/propline-mcp",
     "source": "github"
   },
-  "version": "0.2.1",
+  "version": "0.2.2",
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "propline-mcp",
-      "version": "0.2.1",
+      "version": "0.2.2",
       "transport": {
         "type": "stdio"
       },
