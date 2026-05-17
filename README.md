@@ -3,6 +3,8 @@
 [![npm version](https://img.shields.io/npm/v/propline-mcp.svg)](https://www.npmjs.com/package/propline-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
+Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.proplineapi/propline-mcp` — discoverable from Claude Code, Claude Desktop, and any MCP-aware client.
+
 **Model Context Protocol server** for the [PropLine](https://prop-line.com) player props betting odds API. Plug it into Claude Desktop, Claude Code, or any MCP-compatible client and ask natural-language questions about live odds, prop resolution, cross-book +EV, scores, and box-score stats — the model picks the right tool, calls the API, and answers from real data.
 
 > No more "I'd need an API for that" deflections from your AI assistant. PropLine MCP turns sports-betting research into a chat.

@@ -30,11 +30,23 @@ jobs:
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           PKG_VERSION=$(node -p "require('./package.json').version")
           INDEX_VERSION=$(grep -E '^export const VERSION = ' src/index.ts | sed -E 's/.*"(.*)".*/\1/')
+          SERVER_VERSION=$(node -p "require('./server.json').version")
+          SERVER_PKG_VERSION=$(node -p "require('./server.json').packages[0].version")
+          MCP_NAME=$(node -p "require('./package.json').mcpName")
+          SERVER_NAME=$(node -p "require('./server.json').name")
           echo "tag: $TAG_VERSION"
           echo "package.json: $PKG_VERSION"
           echo "src/index.ts: $INDEX_VERSION"
-          if [ "$TAG_VERSION" != "$PKG_VERSION" ] || [ "$TAG_VERSION" != "$INDEX_VERSION" ]; then
-            echo "::error::tag, package.json, and src/index.ts VERSION must all match"
+          echo "server.json: $SERVER_VERSION (package $SERVER_PKG_VERSION)"
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ] || [ "$TAG_VERSION" != "$INDEX_VERSION" ] \
+             || [ "$TAG_VERSION" != "$SERVER_VERSION" ] || [ "$TAG_VERSION" != "$SERVER_PKG_VERSION" ]; then
+            echo "::error::tag, package.json, src/index.ts VERSION, and server.json (.version + .packages[0].version) must all match"
+            exit 1
+          fi
+          # The MCP Registry verifies npm ownership by matching package.json
+          # mcpName against server.json name — drift here = silent publish reject.
+          if [ "$MCP_NAME" != "$SERVER_NAME" ]; then
+            echo "::error::package.json mcpName ($MCP_NAME) must equal server.json name ($SERVER_NAME)"
             exit 1
           fi
 
@@ -51,3 +63,20 @@ jobs:
       # npmjs.com (Repository: proplineapi/propline-mcp, Workflow:
       # publish.yml). Requires the `id-token: write` permission above.
       - run: npm publish --access public --provenance
+
+      # --- Publish server metadata to the official MCP Registry ---
+      # registry.modelcontextprotocol.io is what MCP clients (Claude Code,
+      # Claude Desktop, etc.) query for discovery. npm hosts the artifact;
+      # the registry only hosts this metadata. Ownership is proven via the
+      # GitHub Actions OIDC token — the registry checks the token's repo
+      # owner (proplineapi) matches the io.github.proplineapi/* namespace,
+      # and that the just-published npm package contains a matching mcpName.
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to MCP Registry (GitHub OIDC)
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server to MCP Registry
+        run: ./mcp-publisher publish
