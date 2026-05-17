@@ -20,20 +20,31 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.2.2";
+export const VERSION = "0.2.3";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
 
-if (!apiKey) {
-  console.error(
-    "[propline-mcp] PROPLINE_API_KEY not set. Get a free key at " +
-      "https://prop-line.com and set it in your MCP client config.",
-  );
-  process.exit(1);
+// The API key is intentionally NOT required at startup. MCP clients and
+// directory crawlers (Glama, the MCP Registry) must be able to introspect
+// the tool list before a key is configured — exiting here would make the
+// server undiscoverable and break the install-then-configure UX. The key
+// is enforced lazily on the first real tool call instead; tools/list never
+// touches the client.
+let _client: PropLineClient | null = null;
+function client(): PropLineClient {
+  if (!_client) {
+    if (!apiKey) {
+      throw new Error(
+        "PROPLINE_API_KEY is not set. Get a free key at " +
+          "https://prop-line.com and add it to your MCP client config " +
+          "(env var: PROPLINE_API_KEY).",
+      );
+    }
+    _client = new PropLineClient({ apiKey, baseUrl });
+  }
+  return _client;
 }
-
-const client = new PropLineClient({ apiKey, baseUrl });
 
 // ---------------------------------------------------------------------
 // Tool definitions
@@ -66,7 +77,7 @@ const tools: ToolDef[] = [
       properties: {},
       additionalProperties: false,
     },
-    handler: () => client.listSports(),
+    handler: () => client().listSports(),
   },
   {
     name: "propline_list_events",
@@ -92,7 +103,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.listEvents(args.sport_key as string, {
+      client().listEvents(args.sport_key as string, {
         live: args.live as boolean | undefined,
       }),
   },
@@ -112,7 +123,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.listEventMarkets(
+      client().listEventMarkets(
         args.sport_key as string,
         args.event_id as string | number,
       ),
@@ -152,7 +163,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getOdds(args.sport_key as string, {
+      client().getOdds(args.sport_key as string, {
         eventId: args.event_id as string | number | undefined,
         markets: args.markets as string | undefined,
         bookmakers: args.bookmakers as string | undefined,
@@ -176,7 +187,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getOddsHistory(
+      client().getOddsHistory(
         args.sport_key as string,
         args.event_id as string | number,
         { markets: args.markets as string | undefined },
@@ -202,7 +213,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getScores(args.sport_key as string, {
+      client().getScores(args.sport_key as string, {
         daysFrom: args.days_from as number | undefined,
       }),
   },
@@ -227,7 +238,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getResolutionSummary({ days: args.days as number | undefined }),
+      client().getResolutionSummary({ days: args.days as number | undefined }),
   },
   {
     name: "propline_get_event_stats",
@@ -245,7 +256,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getEventStats(
+      client().getEventStats(
         args.sport_key as string,
         args.event_id as string | number,
       ),
@@ -269,7 +280,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getEventResults(
+      client().getEventResults(
         args.sport_key as string,
         args.event_id as string | number,
       ),
@@ -304,7 +315,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getPlayerHistory(
+      client().getPlayerHistory(
         args.sport_key as string,
         args.player_name as string,
         {
@@ -337,7 +348,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client.getEventEv(
+      client().getEventEv(
         args.sport_key as string,
         args.event_id as string | number,
         {
@@ -405,3 +416,10 @@ await server.connect(transport);
 // stderr is fine in MCP — clients route it to logs without breaking the
 // JSON-RPC stream on stdout.
 console.error(`[propline-mcp ${VERSION}] connected via stdio`);
+if (!apiKey) {
+  console.error(
+    "[propline-mcp] note: PROPLINE_API_KEY is not set. Tools are listed " +
+      "for discovery, but any tool call will error until you configure it. " +
+      "Free key: https://prop-line.com",
+  );
+}
