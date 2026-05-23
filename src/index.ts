@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.2.3";
+export const VERSION = "0.3.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -215,6 +215,34 @@ const tools: ToolDef[] = [
     handler: (args) =>
       client().getScores(args.sport_key as string, {
         daysFrom: args.days_from as number | undefined,
+      }),
+  },
+  {
+    name: "propline_get_mlb_grand_salami",
+    description:
+      "Free-tier endpoint. Returns the synthetic daily MLB Grand Salami " +
+      "for a given UTC date — total runs scored across every MLB game " +
+      "on the slate plus each book's implied Grand Salami line (median " +
+      "of per-game primary totals across our MLB books incl. Pinnacle, " +
+      "Polymarket, Matchbook, Smarkets). No retail sportsbook quotes " +
+      "this as a single market. Useful for: 'what's the total run line " +
+      "for tonight's full MLB slate', 'did the Grand Salami go over " +
+      "yesterday', 'historical Grand Salami results for backtesting'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: {
+          type: "string",
+          description:
+            "YYYY-MM-DD UTC date. Defaults to today (UTC) when omitted.",
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getMlbGrandSalami({
+        date: args.date as string | undefined,
       }),
   },
   {

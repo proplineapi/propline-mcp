@@ -132,6 +132,12 @@ export class PropLineClient {
     });
   }
 
+  getMlbGrandSalami(opts: { date?: string } = {}): Promise<unknown> {
+    return this.request(`/v1/sports/baseball_mlb/grand-salami`, {
+      date: opts.date,
+    });
+  }
+
   getResolutionSummary(opts: { days?: number } = {}): Promise<unknown> {
     return this.request(`/v1/markets/resolution-summary`, {
       days: opts.days,
