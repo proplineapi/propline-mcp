@@ -27,7 +27,8 @@ The model uses these tools transparently:
 | `propline_list_events` | Upcoming events for a sport, with ids |
 | `propline_list_event_markets` | Available market types for an event |
 | `propline_get_odds` | Live odds — bulk by sport or full props per event |
-| `propline_get_odds_history` | Pro: full snapshot history per outcome |
+| `propline_get_odds_history` | Hobby+: snapshot history per outcome; supports period filters (from/to, relative_from/relative_to, interval, changes_only) |
+| `propline_get_odds_closing` | Hobby+: closing line per (book, market, outcome) — CLV helper |
 | `propline_get_scores` | Game scores + status (free) |
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |

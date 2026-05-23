@@ -116,10 +116,37 @@ export class PropLineClient {
   getOddsHistory(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string } = {},
+    opts: {
+      markets?: string;
+      from?: string;
+      to?: string;
+      relativeFrom?: string;
+      relativeTo?: string;
+      interval?: string;
+      changesOnly?: boolean;
+    } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/events/${eventId}/odds/history`,
+      {
+        markets: opts.markets,
+        from: opts.from,
+        to: opts.to,
+        relative_from: opts.relativeFrom,
+        relative_to: opts.relativeTo,
+        interval: opts.interval,
+        changes_only: opts.changesOnly ? "true" : undefined,
+      },
+    );
+  }
+
+  getOddsClosing(
+    sportKey: string,
+    eventId: string | number,
+    opts: { markets?: string } = {},
+  ): Promise<unknown> {
+    return this.request(
+      `/v1/sports/${sportKey}/events/${eventId}/odds/closing`,
       { markets: opts.markets },
     );
   }

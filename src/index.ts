@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.3.0";
+export const VERSION = "0.4.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -172,10 +172,79 @@ const tools: ToolDef[] = [
   {
     name: "propline_get_odds_history",
     description:
-      "Pro-tier endpoint. Returns the historical line-movement snapshot " +
+      "Hobby+ endpoint. Returns the historical line-movement snapshot " +
       "series for an event (every recorded price/point change per " +
       "outcome over the event's lifetime). Free tier returns market " +
-      "structure with redacted snapshots and an upgrade pointer.",
+      "structure with redacted snapshots and an upgrade pointer. " +
+      "Supports period-historical filters: from/to (absolute ISO), " +
+      "relative_from/relative_to (offsets to commence_time like '-3h' " +
+      "or '0'), interval downsample ('30s'/'1m'/'5m'/'15m'/'30m'/'1h'), " +
+      "and changes_only=true to drop unchanged adjacent snapshots.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        event_id: { type: ["string", "number"] },
+        markets: { type: "string" },
+        from: {
+          type: "string",
+          description:
+            "ISO timestamp; only include snapshots at or after. Mutually exclusive with relative_from.",
+        },
+        to: {
+          type: "string",
+          description:
+            "ISO timestamp; only include snapshots at or before. Mutually exclusive with relative_to.",
+        },
+        relative_from: {
+          type: "string",
+          description:
+            "Offset to commence_time, e.g. '-3h', '-30m', '-90s'. Mutually exclusive with from.",
+        },
+        relative_to: {
+          type: "string",
+          description:
+            "Offset to commence_time, e.g. '-1m' or '0'. Mutually exclusive with to.",
+        },
+        interval: {
+          type: "string",
+          enum: ["30s", "1m", "5m", "15m", "30m", "1h"],
+          description: "Downsample bucket. Latest snapshot per bucket wins.",
+        },
+        changes_only: {
+          type: "boolean",
+          description:
+            "When true, drop snapshots whose (price, point) match the previous one.",
+        },
+      },
+      required: ["sport_key", "event_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getOddsHistory(
+        args.sport_key as string,
+        args.event_id as string | number,
+        {
+          markets: args.markets as string | undefined,
+          from: args.from as string | undefined,
+          to: args.to as string | undefined,
+          relativeFrom: args.relative_from as string | undefined,
+          relativeTo: args.relative_to as string | undefined,
+          interval: args.interval as string | undefined,
+          changesOnly: args.changes_only as boolean | undefined,
+        },
+      ),
+  },
+  {
+    name: "propline_get_odds_closing",
+    description:
+      "Hobby+ endpoint. Returns the closing line per (book, market, " +
+      "outcome) for an event — the last snapshot at or before " +
+      "commence_time. Canonical CLV-tracking helper; one call returns " +
+      "the data point your bet should be measured against, instead of " +
+      "fetching full history and post-processing. Each outcome carries " +
+      "a closing_at field with the snapshot's recorded_at. Free tier " +
+      "returns redacted structure with upgrade pointer.",
     inputSchema: {
       type: "object",
       properties: {
@@ -187,7 +256,7 @@ const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) =>
-      client().getOddsHistory(
+      client().getOddsClosing(
         args.sport_key as string,
         args.event_id as string | number,
         { markets: args.markets as string | undefined },
