@@ -96,6 +96,7 @@ export class PropLineClient {
       markets?: string;
       bookmakers?: string;
       eventId?: string | number;
+      period?: string;
     } = {},
   ): Promise<unknown> {
     if (opts.eventId) {
@@ -104,12 +105,14 @@ export class PropLineClient {
         {
           markets: opts.markets,
           bookmakers: opts.bookmakers,
+          period: opts.period,
         },
       );
     }
     return this.request(`/v1/sports/${sportKey}/odds`, {
       markets: opts.markets,
       bookmakers: opts.bookmakers,
+      period: opts.period,
     });
   }
 
@@ -124,6 +127,7 @@ export class PropLineClient {
       relativeTo?: string;
       interval?: string;
       changesOnly?: boolean;
+      period?: string;
     } = {},
   ): Promise<unknown> {
     return this.request(
@@ -136,6 +140,7 @@ export class PropLineClient {
         relative_to: opts.relativeTo,
         interval: opts.interval,
         changes_only: opts.changesOnly ? "true" : undefined,
+        period: opts.period,
       },
     );
   }
@@ -143,11 +148,11 @@ export class PropLineClient {
   getOddsClosing(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string } = {},
+    opts: { markets?: string; period?: string } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/events/${eventId}/odds/closing`,
-      { markets: opts.markets },
+      { markets: opts.markets, period: opts.period },
     );
   }
 

@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.4.0";
+export const VERSION = "0.5.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -158,6 +158,11 @@ const tools: ToolDef[] = [
           description:
             "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, underdog, prizepicks, kalshi, polymarket, matchbook, smarkets). Default returns all available.",
         },
+        period: {
+          type: "string",
+          description:
+            "Game-period filter. Omitted = full-game markets only. Canonical codes: q1..q4 (quarters), h1/h2 (halves), p1..p3 (hockey periods), i1..i9 (innings), f3/f5/f7 (first N innings). Comma-separated for multiple. 'all' = include every period alongside full-game.",
+        },
       },
       required: ["sport_key"],
       additionalProperties: false,
@@ -167,6 +172,7 @@ const tools: ToolDef[] = [
         eventId: args.event_id as string | number | undefined,
         markets: args.markets as string | undefined,
         bookmakers: args.bookmakers as string | undefined,
+        period: args.period as string | undefined,
       }),
   },
   {
@@ -216,6 +222,11 @@ const tools: ToolDef[] = [
           description:
             "When true, drop snapshots whose (price, point) match the previous one.",
         },
+        period: {
+          type: "string",
+          description:
+            "Game-period filter. Omitted = full-game markets only. Canonical codes (q1..q4, h1/h2, p1..p3, i1..i9, f3/f5/f7), comma-separated, or 'all'.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -232,6 +243,7 @@ const tools: ToolDef[] = [
           relativeTo: args.relative_to as string | undefined,
           interval: args.interval as string | undefined,
           changesOnly: args.changes_only as boolean | undefined,
+          period: args.period as string | undefined,
         },
       ),
   },
@@ -251,6 +263,11 @@ const tools: ToolDef[] = [
         sport_key: { type: "string" },
         event_id: { type: ["string", "number"] },
         markets: { type: "string" },
+        period: {
+          type: "string",
+          description:
+            "Game-period filter. Omitted = full-game markets only. Canonical codes (q1..q4, h1/h2, p1..p3, i1..i9, f3/f5/f7), comma-separated, or 'all'.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -259,7 +276,10 @@ const tools: ToolDef[] = [
       client().getOddsClosing(
         args.sport_key as string,
         args.event_id as string | number,
-        { markets: args.markets as string | undefined },
+        {
+          markets: args.markets as string | undefined,
+          period: args.period as string | undefined,
+        },
       ),
   },
   {
