@@ -18,17 +18,18 @@ Once installed, you can prompt the model with things like:
 - *"List today's MLB pitcher strikeout props from DraftKings and Pinnacle side by side."*
 - *"Did Nikola Jokic's points prop hit last night? What was the line?"*
 - *"Compare PrizePicks DFS projections to Bovada lines for tonight's NBA slate."*
+- *"What's the first-quarter total on Lakers vs Celtics, and which book has the best Over?"*
 
 The model uses these tools transparently:
 
 | Tool | What it does |
 |------|--------------|
-| `propline_list_sports` | Discover what sports PropLine polls (24 today) |
+| `propline_list_sports` | Discover what sports PropLine polls (38 today) |
 | `propline_list_events` | Upcoming events for a sport, with ids |
 | `propline_list_event_markets` | Available market types for an event |
-| `propline_get_odds` | Live odds — bulk by sport or full props per event |
-| `propline_get_odds_history` | Hobby+: snapshot history per outcome; supports period filters (from/to, relative_from/relative_to, interval, changes_only) |
-| `propline_get_odds_closing` | Hobby+: closing line per (book, market, outcome) — CLV helper |
+| `propline_get_odds` | Live odds — bulk by sport or full props per event. Accepts `period` (q1/h1/p1/f5/…) to scope to game-period markets. |
+| `propline_get_odds_history` | Hobby+: snapshot history per outcome; supports `period` (q1/h1/…) plus time-window filters (from/to, relative_from/relative_to, interval, changes_only) |
+| `propline_get_odds_closing` | Hobby+: closing line per (book, market, outcome) — CLV helper. Accepts `period` to scope to a specific game period. |
 | `propline_get_scores` | Game scores + status (free) |
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
