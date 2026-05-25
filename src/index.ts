@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.5.2";
+export const VERSION = "0.6.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -331,6 +331,35 @@ const tools: ToolDef[] = [
     },
     handler: (args) =>
       client().getMlbGrandSalami({
+        date: args.date as string | undefined,
+      }),
+  },
+  {
+    name: "propline_get_nhl_daily_goals_total",
+    description:
+      "Free-tier endpoint. Returns the synthetic daily NHL goals total " +
+      "(hockey's equivalent of the MLB Grand Salami) for a given UTC " +
+      "date — total goals scored across every NHL game on the slate " +
+      "(including OT/SO) plus each book's implied Daily Goals Total " +
+      "line (median of per-game primary totals across our NHL books). " +
+      "No retail sportsbook quotes this as a single market. Useful " +
+      "for: 'what's the total goal line for tonight's full NHL slate', " +
+      "'did the Daily Goals Total go over yesterday', 'historical " +
+      "NHL daily-goals results for backtesting'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        date: {
+          type: "string",
+          description:
+            "YYYY-MM-DD UTC date. Defaults to today (UTC) when omitted.",
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getNhlDailyGoalsTotal({
         date: args.date as string | undefined,
       }),
   },

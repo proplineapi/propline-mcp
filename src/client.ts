@@ -170,6 +170,12 @@ export class PropLineClient {
     });
   }
 
+  getNhlDailyGoalsTotal(opts: { date?: string } = {}): Promise<unknown> {
+    return this.request(`/v1/sports/hockey_nhl/daily-goals-total`, {
+      date: opts.date,
+    });
+  }
+
   getResolutionSummary(opts: { days?: number } = {}): Promise<unknown> {
     return this.request(`/v1/markets/resolution-summary`, {
       days: opts.days,
