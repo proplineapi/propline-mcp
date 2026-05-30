@@ -203,6 +203,19 @@ export class PropLineClient {
     );
   }
 
+  // ----- Player trends -----
+
+  getPlayerTrends(
+    sportKey: string,
+    playerName: string,
+    opts: { market?: string } = {},
+  ): Promise<unknown> {
+    return this.request(
+      `/v1/sports/${sportKey}/players/${encodeURIComponent(playerName)}/trends`,
+      { market: opts.market },
+    );
+  }
+
   // ----- Cross-book +EV -----
 
   getEventEv(

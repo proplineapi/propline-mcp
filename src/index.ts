@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.6.0";
+export const VERSION = "0.6.1";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -467,6 +467,43 @@ const tools: ToolDef[] = [
         {
           limit: args.limit as number | undefined,
           markets: args.markets as string | undefined,
+        },
+      ),
+  },
+  {
+    name: "propline_get_player_trends",
+    description:
+      "Hit-rate trends / last-N-games over rate for a player — unique to " +
+      "PropLine's prop-resolution data. For each market the player has " +
+      "graded history in, returns over/under/push splits across the last " +
+      "5/10/20/50 graded games, current streak, average actual stat, and " +
+      "the recent line. This is the 'did X go over in N of his last M " +
+      "games?' surface. Omit `market` for all markets, or pass one to " +
+      "scope (e.g. 'player_points', 'batter_hits').",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        player_name: {
+          type: "string",
+          description:
+            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic'",
+        },
+        market: {
+          type: "string",
+          description:
+            "Optional single market to scope trends to (e.g. 'player_points'). Omit for all markets.",
+        },
+      },
+      required: ["sport_key", "player_name"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getPlayerTrends(
+        args.sport_key as string,
+        args.player_name as string,
+        {
+          market: args.market as string | undefined,
         },
       ),
   },

@@ -35,6 +35,7 @@ The model uses these tools transparently:
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_get_player_history` | Player prop history with resolution |
+| `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
 
 ## Install
@@ -63,7 +64,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. The hammer icon should show 10 PropLine tools.
+Restart Claude Desktop. The hammer icon should show 13 PropLine tools.
 
 #### Claude Code
 
