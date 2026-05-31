@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.6.1";
+export const VERSION = "0.7.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -281,6 +281,61 @@ const tools: ToolDef[] = [
           period: args.period as string | undefined,
         },
       ),
+  },
+  {
+    name: "propline_export_odds_history",
+    description:
+      "Backfill-pass / Enterprise only. Bulk line-movement tick history " +
+      "as CSV — every recorded odds snapshot (price + line, per book, " +
+      "including period markets) across a whole sport, one row per " +
+      "(outcome, snapshot). This is the raw firehose no subscription tier " +
+      "can bulk-pull (Pro/Streaming use propline_get_odds_history per " +
+      "event instead). REQUIRES a since/until window to keep the pull " +
+      "bounded — the full archive runs to gigabytes per sport. The result " +
+      "is capped to the first 200 rows for context safety; for the full " +
+      "dataset use the /v1/exports/odds-history endpoint directly with " +
+      "curl/SDK and stream to disk. Non-entitled keys get a 403 with an " +
+      "upgrade pointer.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: {
+          type: "string",
+          description: "Sport key, e.g. baseball_mlb",
+        },
+        since: {
+          type: "string",
+          description:
+            "ISO datetime lower bound on recorded_at (required, e.g. 2026-04-01T00:00:00Z). Keep the window narrow.",
+        },
+        until: {
+          type: "string",
+          description:
+            "ISO datetime upper bound on recorded_at (required, e.g. 2026-05-01T00:00:00Z).",
+        },
+        market: { type: "string", description: "Optional market key filter" },
+        bookmaker: { type: "string", description: "Optional bookmaker filter" },
+      },
+      required: ["sport_key", "since", "until"],
+      additionalProperties: false,
+    },
+    handler: async (args) => {
+      const csv = await client().exportOddsHistory(args.sport_key as string, {
+        since: args.since as string,
+        until: args.until as string,
+        market: args.market as string | undefined,
+        bookmaker: args.bookmaker as string | undefined,
+      });
+      const lines = csv.split("\n");
+      const CAP = 200; // header + 200 data rows
+      if (lines.length <= CAP + 1) return csv;
+      return (
+        lines.slice(0, CAP + 1).join("\n") +
+        `\n# … truncated: ${lines.length - 1} total rows. ` +
+        `Narrow since/until or pull the full file via the ` +
+        `/v1/exports/odds-history endpoint (curl/SDK) and stream to disk.`
+      );
+    },
   },
   {
     name: "propline_get_scores",

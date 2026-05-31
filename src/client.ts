@@ -156,6 +156,33 @@ export class PropLineClient {
     );
   }
 
+  // ----- Bulk exports -----
+
+  /**
+   * Full line-movement tick history as CSV text (Backfill pass / Enterprise
+   * only — other tiers get a 403). Returns the raw CSV string; the MCP tool
+   * layer caps the row count so a large pull never floods the context.
+   * A time window (since/until) is required at the tool layer to bound the
+   * download.
+   */
+  exportOddsHistory(
+    sportKey: string,
+    opts: {
+      market?: string;
+      bookmaker?: string;
+      since?: string;
+      until?: string;
+    } = {},
+  ): Promise<string> {
+    return this.request<string>(`/v1/exports/odds-history`, {
+      sport: sportKey,
+      market: opts.market,
+      bookmaker: opts.bookmaker,
+      since: opts.since,
+      until: opts.until,
+    });
+  }
+
   // ----- Scores + stats + resolution -----
 
   getScores(sportKey: string, opts: { daysFrom?: number } = {}): Promise<unknown> {
