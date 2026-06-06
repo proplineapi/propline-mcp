@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.8.0";
+export const VERSION = "0.9.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -510,6 +510,47 @@ const tools: ToolDef[] = [
       client().getEventContext(
         args.sport_key as string,
         args.event_id as string | number,
+      ),
+  },
+  {
+    name: "propline_get_event_movement",
+    description:
+      "Line movement + steam detection from the snapshot tick history. " +
+      "Per (book, market, outcome): opening line, latest line, signed " +
+      "implied-probability shift, point shift, direction. The steam[] " +
+      "array flags outcomes that multiple books moved the same direction — " +
+      "the classic sharp-money signal, computed across all 16 books " +
+      "PropLine polls. When a book moves the line itself, that outcome's " +
+      "prob_shift is null and direction is 'line_moved' (excluded from the " +
+      "steam signal). No pull-only odds API can produce this. Hobby+ full; " +
+      "free tier redacted.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        event_id: { type: ["string", "number"] },
+        markets: {
+          type: "string",
+          description:
+            "Comma-separated market keys. Defaults to h2h,spreads,totals.",
+        },
+        period: {
+          type: "string",
+          description:
+            "Game-period filter (q1..q4, h1/h2, p1..p3, i1..i9, f3/f5/f7; comma-separated, or 'all'). Omit for full-game.",
+        },
+      },
+      required: ["sport_key", "event_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getEventMovement(
+        args.sport_key as string,
+        args.event_id as string | number,
+        {
+          markets: args.markets as string | undefined,
+          period: args.period as string | undefined,
+        },
       ),
   },
   {
