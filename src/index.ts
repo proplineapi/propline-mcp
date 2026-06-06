@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.7.0";
+export const VERSION = "0.8.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -482,6 +482,32 @@ const tools: ToolDef[] = [
     },
     handler: (args) =>
       client().getEventResults(
+        args.sport_key as string,
+        args.event_id as string | number,
+      ),
+  },
+  {
+    name: "propline_get_event_context",
+    description:
+      "Game context for an event — the conditions a prop settles under: " +
+      "probable starting pitchers, a confirmed-lineup flag, the home-plate " +
+      "umpire, and first-pitch weather (temperature, wind, precipitation) " +
+      "at outdoor / open-roof venues (indoor venues return weather=null). " +
+      "The same block is embedded in get_event_results, so every graded " +
+      "prop carries its conditions — unique to PropLine. Free tier. MLB " +
+      "today; weather extends to other outdoor sports next. 404 when no " +
+      "context is on file for the event yet.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        event_id: { type: ["string", "number"] },
+      },
+      required: ["sport_key", "event_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getEventContext(
         args.sport_key as string,
         args.event_id as string | number,
       ),

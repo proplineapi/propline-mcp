@@ -217,6 +217,10 @@ export class PropLineClient {
     return this.request(`/v1/sports/${sportKey}/events/${eventId}/results`);
   }
 
+  getEventContext(sportKey: string, eventId: string | number): Promise<unknown> {
+    return this.request(`/v1/sports/${sportKey}/events/${eventId}/context`);
+  }
+
   // ----- Player history -----
 
   getPlayerHistory(

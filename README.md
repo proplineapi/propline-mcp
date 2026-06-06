@@ -34,6 +34,7 @@ The model uses these tools transparently:
 | `propline_get_scores` | Game scores + status (free) |
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
+| `propline_get_event_context` | Game conditions a prop settles under — probable pitchers, lineup flag, home-plate umpire, first-pitch weather (free) |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_get_player_history` | Player prop history with resolution |
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual |
