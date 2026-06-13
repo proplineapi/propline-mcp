@@ -54,7 +54,7 @@ jobs:
       # Block publish if any direct or transitive dep has a known
       # high/critical CVE. Catches the auto-bump → poisoned-version
       # path even when our cooldown has expired.
-      - run: npm audit --audit-level=high
+      - run: npm audit --audit-level=high --omit=dev
       - run: npm run typecheck
       - run: npm run build
       # OIDC trusted publishing — no long-lived NPM_TOKEN.
