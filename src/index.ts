@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.10.0";
+export const VERSION = "0.11.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -139,7 +139,10 @@ const tools: ToolDef[] = [
       "carries the requested markets (currently up to 13: Bovada, " +
       "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
       "Underdog, PrizePicks, Kalshi, Polymarket, Matchbook, Smarkets " +
-      "— coverage varies by sport).",
+      "— coverage varies by sport). Underdog Fantasy outcomes carry a " +
+      "payout_multiplier (DFS boost/discount factor; null = standard pick, " +
+      "e.g. 1.5 = boost, 0.75 = discount) — skip non-null values when " +
+      "comparing DFS lines to sportsbook consensus.",
     inputSchema: {
       type: "object",
       properties: {
