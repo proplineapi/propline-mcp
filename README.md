@@ -31,6 +31,7 @@ The model uses these tools transparently:
 | `propline_get_odds_history` | Hobby+: snapshot history per outcome; supports `period` (q1/h1/…) plus time-window filters (from/to, relative_from/relative_to, interval, changes_only) |
 | `propline_get_odds_closing` | Hobby+: closing line per (book, market, outcome) — CLV helper. Accepts `period` to scope to a specific game period. |
 | `propline_export_odds_history` | Backfill-pass / Enterprise: bulk line-movement tick history (every snapshot, per book) for a sport. Requires a `since`/`until` window; result capped to 200 rows (use the REST endpoint directly for the full file). |
+| `propline_get_futures` | Season-long futures — championship/division/conference winners, MVP + awards, season win totals — across Bovada/FanDuel/DraftKings/Pinnacle (free) |
 | `propline_get_scores` | Game scores + status (free) |
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |

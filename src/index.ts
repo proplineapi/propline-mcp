@@ -20,7 +20,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.11.0";
+export const VERSION = "0.12.0";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
@@ -339,6 +339,33 @@ const tools: ToolDef[] = [
         `/v1/exports/odds-history endpoint (curl/SDK) and stream to disk.`
       );
     },
+  },
+  {
+    name: "propline_get_futures",
+    description:
+      "Free-tier endpoint. Returns season-long futures (outright) markets " +
+      "for a sport — championship/Super Bowl/division/conference winners, " +
+      "MVP and award winners, season win totals — aggregated across " +
+      "Bovada, FanDuel, DraftKings, and Pinnacle. One row per (futures " +
+      "event, book, market) with each team/player outcome and its price. " +
+      "Marquee markets (Super Bowl winner, MVP, division/conference) are " +
+      "quoted by multiple books for comparison; exotic markets are often " +
+      "single-book. Useful for: 'who are the Super Bowl favorites across " +
+      "books', 'NFL MVP odds', 'NBA championship futures'. Futures are " +
+      "unresolved (no settlement grade).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: {
+          type: "string",
+          description:
+            "Sport key — e.g. football_nfl, basketball_nba, baseball_mlb.",
+        },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) => client().getFutures(args.sport_key as string),
   },
   {
     name: "propline_get_scores",

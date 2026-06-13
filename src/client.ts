@@ -209,6 +209,10 @@ export class PropLineClient {
     });
   }
 
+  getFutures(sportKey: string): Promise<unknown> {
+    return this.request(`/v1/sports/${sportKey}/futures`);
+  }
+
   getEventStats(sportKey: string, eventId: string | number): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/events/${eventId}/stats`);
   }
