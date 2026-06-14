@@ -42,7 +42,17 @@ The model uses these tools transparently:
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
 
-## Install
+## Zero-config quick start
+
+No key needed to try it. The server falls back to a shared public demo key, so this just works:
+
+```bash
+npx -y propline-mcp
+```
+
+Your agent can immediately pull live odds, scores, and stats. The demo key is free-tier and shared — paid features (resolution, +EV, history, exports) return a redacted teaser, and limits are pooled across everyone. For full access and your own limits, set `PROPLINE_API_KEY` (below). Get a free personal key at [prop-line.com](https://prop-line.com/?ref=mcp).
+
+## Install (with your own key)
 
 ### 1. Get a PropLine API key
 
@@ -86,7 +96,7 @@ Run `propline-mcp` as a stdio server. Most clients accept a command + env. See t
 
 | Env var | Required | Default | Notes |
 |--------|:--------:|---------|-------|
-| `PROPLINE_API_KEY` | yes | — | Get a free key at [prop-line.com](https://prop-line.com/?ref=mcp) |
+| `PROPLINE_API_KEY` | no | shared demo key | Unset = shared free demo key (paid features redacted, pooled limits). Set your own free key from [prop-line.com](https://prop-line.com/?ref=mcp) for full access. |
 | `PROPLINE_BASE_URL` | no | `https://api.prop-line.com` | Override for self-hosted setups |
 
 ## Comparison with the-odds-api

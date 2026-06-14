@@ -7,7 +7,9 @@
  * box-score stats directly via tool calls.
  *
  * Run via:   npx -y propline-mcp
- * Auth:      PROPLINE_API_KEY env var (free key at https://prop-line.com)
+ * Auth:      PROPLINE_API_KEY env var (free key at https://prop-line.com).
+ *            If unset, falls back to a shared public DEMO key so an agent
+ *            can answer its first question with zero config — see DEMO_KEY.
  * Optional:  PROPLINE_BASE_URL env var (override for self-hosted setups)
  */
 
@@ -20,28 +22,36 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.12.0";
+export const VERSION = "0.13.0";
+
+// Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
+// with ZERO configuration — an AI agent can discover the server and answer
+// its first question without a human-issued key in the loop. It's a free-tier,
+// read-only, rate-limited key: paid features (resolution, +EV, history,
+// exports) still return the redacted teaser + upgrade_url, so the funnel is
+// intact, and a generous-but-bounded daily cap nudges real production usage
+// toward a personal key. Get your own (higher limits, full features) at
+// https://prop-line.com. Rotated by changing this value AND the seed in the
+// API repo (scraper/seed.py) together.
+export const DEMO_KEY = "be2b8487fcfacb1fbc292a8aa925a84c";
 
 const apiKey = process.env.PROPLINE_API_KEY;
 const baseUrl = process.env.PROPLINE_BASE_URL;
+const usingDemoKey = !apiKey;
 
 // The API key is intentionally NOT required at startup. MCP clients and
 // directory crawlers (Glama, the MCP Registry) must be able to introspect
 // the tool list before a key is configured — exiting here would make the
-// server undiscoverable and break the install-then-configure UX. The key
-// is enforced lazily on the first real tool call instead; tools/list never
-// touches the client.
+// server undiscoverable and break the install-then-configure UX. tools/list
+// never touches the client. When no PROPLINE_API_KEY is set we fall back to
+// the shared DEMO_KEY so the first tool call still succeeds (free-tier data).
 let _client: PropLineClient | null = null;
 function client(): PropLineClient {
   if (!_client) {
-    if (!apiKey) {
-      throw new Error(
-        "PROPLINE_API_KEY is not set. Get a free key at " +
-          "https://prop-line.com and add it to your MCP client config " +
-          "(env var: PROPLINE_API_KEY).",
-      );
-    }
-    _client = new PropLineClient({ apiKey, baseUrl });
+    // Demo-key fallback is announced once at startup (see below); no need to
+    // repeat it here. apiKey ?? DEMO_KEY keeps the first call working with
+    // zero config.
+    _client = new PropLineClient({ apiKey: apiKey ?? DEMO_KEY, baseUrl });
   }
   return _client;
 }
@@ -752,10 +762,10 @@ await server.connect(transport);
 // stderr is fine in MCP — clients route it to logs without breaking the
 // JSON-RPC stream on stdout.
 console.error(`[propline-mcp ${VERSION}] connected via stdio`);
-if (!apiKey) {
+if (usingDemoKey) {
   console.error(
-    "[propline-mcp] note: PROPLINE_API_KEY is not set. Tools are listed " +
-      "for discovery, but any tool call will error until you configure it. " +
-      "Free key: https://prop-line.com",
+    "[propline-mcp] note: no PROPLINE_API_KEY set — running on the shared " +
+      "free demo key. Tool calls work; paid features are redacted and limits " +
+      "are pooled. Get your own free key: https://prop-line.com",
   );
 }
