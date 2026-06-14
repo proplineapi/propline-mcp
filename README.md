@@ -5,7 +5,7 @@
 
 Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.proplineapi/propline-mcp` — discoverable from Claude Code, Claude Desktop, and any MCP-aware client.
 
-**Model Context Protocol server** for the [PropLine](https://prop-line.com) player props betting odds API. Plug it into Claude Desktop, Claude Code, or any MCP-compatible client and ask natural-language questions about live odds, prop resolution, cross-book +EV, scores, and box-score stats — the model picks the right tool, calls the API, and answers from real data.
+**Model Context Protocol server** for the [PropLine](https://prop-line.com/?ref=mcp) player props betting odds API. Plug it into Claude Desktop, Claude Code, or any MCP-compatible client and ask natural-language questions about live odds, prop resolution, cross-book +EV, scores, and box-score stats — the model picks the right tool, calls the API, and answers from real data.
 
 > No more "I'd need an API for that" deflections from your AI assistant. PropLine MCP turns sports-betting research into a chat.
 
@@ -46,7 +46,7 @@ The model uses these tools transparently:
 
 ### 1. Get a PropLine API key
 
-[prop-line.com](https://prop-line.com) — free tier is 1,000 requests/day, no credit card. Pro at $19/mo unlocks resolution, history, and +EV.
+[prop-line.com](https://prop-line.com/?ref=mcp) — free tier is 1,000 requests/day, no credit card. Pro at $19/mo unlocks resolution, history, and +EV.
 
 ### 2. Add to your MCP client
 
@@ -86,7 +86,7 @@ Run `propline-mcp` as a stdio server. Most clients accept a command + env. See t
 
 | Env var | Required | Default | Notes |
 |--------|:--------:|---------|-------|
-| `PROPLINE_API_KEY` | yes | — | Get a free key at [prop-line.com](https://prop-line.com) |
+| `PROPLINE_API_KEY` | yes | — | Get a free key at [prop-line.com](https://prop-line.com/?ref=mcp) |
 | `PROPLINE_BASE_URL` | no | `https://api.prop-line.com` | Override for self-hosted setups |
 
 ## Comparison with the-odds-api
