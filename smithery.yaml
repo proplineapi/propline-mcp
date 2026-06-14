@@ -1,0 +1,37 @@
+# Smithery configuration file: https://smithery.ai/docs/deployments
+#
+# PROPLINE_API_KEY is OPTIONAL — the server falls back to a shared public
+# free-tier demo key when it's unset, so Smithery users can try every tool
+# with zero config. Supplying a personal key (free at https://prop-line.com)
+# lifts the pooled demo limits and unlocks paid features.
+build:
+  dockerBuildPath: .
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required: []
+    properties:
+      proplineApiKey:
+        type: string
+        description: >-
+          Optional PropLine API key. Leave blank to use the shared free demo
+          key (paid features redacted, pooled limits). Get your own free key
+          at https://prop-line.com for full access and your own limits.
+      proplineBaseUrl:
+        type: string
+        description: >-
+          Optional API base URL override for self-hosted setups. Defaults to
+          https://api.prop-line.com.
+  commandFunction:
+    # A function that produces the CLI command to start the MCP on stdio.
+    # Only set the env vars the user actually provided so the in-server demo
+    # fallback engages when no key is given.
+    |-
+    (config) => {
+      const env = {};
+      if (config.proplineApiKey) env.PROPLINE_API_KEY = config.proplineApiKey;
+      if (config.proplineBaseUrl) env.PROPLINE_BASE_URL = config.proplineBaseUrl;
+      return { command: 'node', args: ['dist/index.js'], env };
+    }
