@@ -197,6 +197,15 @@ export class PropLineClient {
     });
   }
 
+  getDfsPayouts(
+    opts: { platform?: string; legWinProb?: number } = {},
+  ): Promise<unknown> {
+    return this.request(`/v1/dfs/payouts`, {
+      platform: opts.platform ?? "prizepicks",
+      leg_win_prob: opts.legWinProb,
+    });
+  }
+
   getNhlDailyGoalsTotal(opts: { date?: string } = {}): Promise<unknown> {
     return this.request(`/v1/sports/hockey_nhl/daily-goals-total`, {
       date: opts.date,

@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.13.0";
+export const VERSION = "0.14.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -399,6 +399,36 @@ const tools: ToolDef[] = [
     handler: (args) =>
       client().getScores(args.sport_key as string, {
         daysFrom: args.days_from as number | undefined,
+      }),
+  },
+  {
+    name: "propline_get_dfs_payouts",
+    description:
+      "Free-tier reference math. Returns the PrizePicks Power Play (all legs " +
+      "must hit) and Flex Play (partial payouts) entry payout schedule for " +
+      "2-6 legs, plus the per-leg breakeven win probability for each play. " +
+      "Pass leg_win_prob (e.g. 0.58) to also get expected_return (per $1) and " +
+      "is_plus_ev per play — the slip-level breakeven. Useful for: 'what hit " +
+      "rate do I need to beat a 4-pick PrizePicks Power play', 'is a 3-leg " +
+      "flex +EV at 60% per leg'. NOTE: standard published payouts only — " +
+      "demon/goblin per-pick modifiers aren't in PrizePicks's feed (see the " +
+      "disclaimer field); breakeven assumes independent legs.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        leg_win_prob: {
+          type: "number",
+          description:
+            "Optional assumed per-leg win probability in [0,1]. Adds " +
+            "expected_return + is_plus_ev to each play.",
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getDfsPayouts({
+        legWinProb: args.leg_win_prob as number | undefined,
       }),
   },
   {
