@@ -263,11 +263,11 @@ export class PropLineClient {
   getPlayerTrends(
     sportKey: string,
     playerName: string,
-    opts: { market?: string } = {},
+    opts: { market?: string; dfsOddsType?: string } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/players/${encodeURIComponent(playerName)}/trends`,
-      { market: opts.market },
+      { market: opts.market, dfs_odds_type: opts.dfsOddsType },
     );
   }
 

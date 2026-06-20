@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.14.1";
+export const VERSION = "0.15.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -687,6 +687,12 @@ const tools: ToolDef[] = [
           description:
             "Optional single market to scope trends to (e.g. 'player_points'). Omit for all markets.",
         },
+        dfs_odds_type: {
+          type: "string",
+          enum: ["standard", "goblin", "demon"],
+          description:
+            "Optional PrizePicks pick-em flavor. When set, the trend is computed against that flavor's PrizePicks line only (e.g. compare a player's goblin-line hit-rate vs his standard-line trend). Omit for the default cross-book behavior.",
+        },
       },
       required: ["sport_key", "player_name"],
       additionalProperties: false,
@@ -697,6 +703,7 @@ const tools: ToolDef[] = [
         args.player_name as string,
         {
           market: args.market as string | undefined,
+          dfsOddsType: args.dfs_odds_type as string | undefined,
         },
       ),
   },

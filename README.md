@@ -39,7 +39,7 @@ The model uses these tools transparently:
 | `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+) |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_get_player_history` | Player prop history with resolution |
-| `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual |
+| `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual (optional `dfs_odds_type` to scope to a PrizePicks flavor) |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
 
 ## Zero-config quick start
