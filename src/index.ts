@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.15.0";
+export const VERSION = "0.16.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -205,6 +205,11 @@ const tools: ToolDef[] = [
         sport_key: { type: "string" },
         event_id: { type: ["string", "number"] },
         markets: { type: "string" },
+        bookmakers: {
+          type: "string",
+          description:
+            "Comma-separated subset of book keys (e.g. 'draftkings,fanduel'). Default returns all available.",
+        },
         from: {
           type: "string",
           description:
@@ -250,6 +255,7 @@ const tools: ToolDef[] = [
         args.event_id as string | number,
         {
           markets: args.markets as string | undefined,
+          bookmakers: args.bookmakers as string | undefined,
           from: args.from as string | undefined,
           to: args.to as string | undefined,
           relativeFrom: args.relative_from as string | undefined,
@@ -276,6 +282,11 @@ const tools: ToolDef[] = [
         sport_key: { type: "string" },
         event_id: { type: ["string", "number"] },
         markets: { type: "string" },
+        bookmakers: {
+          type: "string",
+          description:
+            "Comma-separated subset of book keys (e.g. 'draftkings,fanduel'). Default returns all available.",
+        },
         period: {
           type: "string",
           description:
@@ -291,6 +302,7 @@ const tools: ToolDef[] = [
         args.event_id as string | number,
         {
           markets: args.markets as string | undefined,
+          bookmakers: args.bookmakers as string | undefined,
           period: args.period as string | undefined,
         },
       ),
@@ -605,6 +617,11 @@ const tools: ToolDef[] = [
           description:
             "Comma-separated market keys. Defaults to h2h,spreads,totals.",
         },
+        bookmakers: {
+          type: "string",
+          description:
+            "Comma-separated subset of book keys (e.g. 'draftkings,fanduel'). Default returns all available.",
+        },
         period: {
           type: "string",
           description:
@@ -620,6 +637,7 @@ const tools: ToolDef[] = [
         args.event_id as string | number,
         {
           markets: args.markets as string | undefined,
+          bookmakers: args.bookmakers as string | undefined,
           period: args.period as string | undefined,
         },
       ),

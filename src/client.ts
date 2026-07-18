@@ -121,6 +121,7 @@ export class PropLineClient {
     eventId: string | number,
     opts: {
       markets?: string;
+      bookmakers?: string;
       from?: string;
       to?: string;
       relativeFrom?: string;
@@ -134,6 +135,7 @@ export class PropLineClient {
       `/v1/sports/${sportKey}/events/${eventId}/odds/history`,
       {
         markets: opts.markets,
+        bookmakers: opts.bookmakers,
         from: opts.from,
         to: opts.to,
         relative_from: opts.relativeFrom,
@@ -148,11 +150,11 @@ export class PropLineClient {
   getOddsClosing(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string; period?: string } = {},
+    opts: { markets?: string; bookmakers?: string; period?: string } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/events/${eventId}/odds/closing`,
-      { markets: opts.markets, period: opts.period },
+      { markets: opts.markets, bookmakers: opts.bookmakers, period: opts.period },
     );
   }
 
@@ -237,11 +239,11 @@ export class PropLineClient {
   getEventMovement(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string; period?: string } = {},
+    opts: { markets?: string; bookmakers?: string; period?: string } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/events/${eventId}/movement`,
-      { markets: opts.markets, period: opts.period },
+      { markets: opts.markets, bookmakers: opts.bookmakers, period: opts.period },
     );
   }
 
