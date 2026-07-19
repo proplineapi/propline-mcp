@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.17.0";
+export const VERSION = "0.17.1";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -761,7 +761,9 @@ const tools: ToolDef[] = [
   {
     name: "propline_get_best_line",
     description:
-      "Hobby+ endpoint. Cross-book line shopping: for every (market, " +
+      "Cross-book line shopping (Hobby+ for prices; free tier gets the " +
+      "full structure with book identities + best-first ranking but " +
+      "prices nulled and redacted:true). For every (market, " +
       "player, line) tuple on an event, returns the single best American " +
       "price across all comparable books, plus an all_prices array " +
       "sorted best-first (one row per book, each with last_update). " +
