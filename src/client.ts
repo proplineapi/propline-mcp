@@ -285,4 +285,15 @@ export class PropLineClient {
       min_ev_pct: opts.minEvPct,
     });
   }
+
+  getEventBestLine(
+    sportKey: string,
+    eventId: string | number,
+    opts: { markets?: string; bookmakers?: string } = {},
+  ): Promise<unknown> {
+    return this.request(`/v1/sports/${sportKey}/events/${eventId}/best-line`, {
+      markets: opts.markets,
+      bookmakers: opts.bookmakers,
+    });
+  }
 }

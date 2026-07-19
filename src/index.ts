@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.16.0";
+export const VERSION = "0.17.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -755,6 +755,47 @@ const tools: ToolDef[] = [
         {
           markets: args.markets as string | undefined,
           minEvPct: args.min_ev_pct as number | undefined,
+        },
+      ),
+  },
+  {
+    name: "propline_get_best_line",
+    description:
+      "Hobby+ endpoint. Cross-book line shopping: for every (market, " +
+      "player, line) tuple on an event, returns the single best American " +
+      "price across all comparable books, plus an all_prices array " +
+      "sorted best-first (one row per book, each with last_update). " +
+      "Companion to propline_get_event_ev: /ev says whether a price " +
+      "beats the no-vig fair line; best-line says which book pays the " +
+      "most. DFS pick'em books (PrizePicks, Sleeper, Dabble) are " +
+      "excluded; Underdog only at clean two-way lines. Optional " +
+      "bookmakers filter to shop only the books the user holds " +
+      "accounts at.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        event_id: { type: ["string", "number"] },
+        markets: {
+          type: "string",
+          description: "Comma-separated market keys (e.g. 'pitcher_strikeouts,h2h').",
+        },
+        bookmakers: {
+          type: "string",
+          description:
+            "Comma-separated book keys (e.g. 'draftkings,fanduel') to shop only those books.",
+        },
+      },
+      required: ["sport_key", "event_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getEventBestLine(
+        args.sport_key as string,
+        args.event_id as string | number,
+        {
+          markets: args.markets as string | undefined,
+          bookmakers: args.bookmakers as string | undefined,
         },
       ),
   },

@@ -33,6 +33,9 @@ The model uses these tools transparently:
 | `propline_export_odds_history` | Backfill-pass / Enterprise: bulk line-movement tick history (every snapshot, per book) for a sport. Requires a `since`/`until` window; result capped to 200 rows (use the REST endpoint directly for the full file). |
 | `propline_get_futures` | Season-long futures — championship/division/conference winners, MVP + awards, season win totals — across Bovada/FanDuel/DraftKings/Pinnacle (free) |
 | `propline_get_scores` | Game scores + status (free) |
+| `propline_get_dfs_payouts` | PrizePicks Power/Flex payout schedule + per-leg breakeven win probability (free) |
+| `propline_get_mlb_grand_salami` | Synthetic daily MLB Grand Salami — total runs + each book's implied line (free) |
+| `propline_get_nhl_daily_goals_total` | Synthetic daily NHL goals total — hockey's Grand Salami (free) |
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
 | `propline_get_event_context` | Game conditions a prop settles under — probable pitchers, lineup flag, home-plate umpire, first-pitch weather (free) |
@@ -41,6 +44,7 @@ The model uses these tools transparently:
 | `propline_get_player_history` | Player prop history with resolution |
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual (optional `dfs_odds_type` to scope to a PrizePicks flavor) |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
+| `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
 
 ## Zero-config quick start
 
@@ -78,7 +82,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. The hammer icon should show 13 PropLine tools.
+Restart Claude Desktop. The hammer icon should show 21 PropLine tools.
 
 #### Claude Code
 
