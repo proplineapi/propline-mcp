@@ -97,23 +97,22 @@ export class PropLineClient {
       bookmakers?: string;
       eventId?: string | number;
       period?: string;
+      includeLinks?: boolean;
     } = {},
   ): Promise<unknown> {
-    if (opts.eventId) {
-      return this.request(
-        `/v1/sports/${sportKey}/events/${opts.eventId}/odds`,
-        {
-          markets: opts.markets,
-          bookmakers: opts.bookmakers,
-          period: opts.period,
-        },
-      );
-    }
-    return this.request(`/v1/sports/${sportKey}/odds`, {
+    const params = {
       markets: opts.markets,
       bookmakers: opts.bookmakers,
       period: opts.period,
-    });
+      includeLinks: opts.includeLinks ? "true" : undefined,
+    };
+    if (opts.eventId) {
+      return this.request(
+        `/v1/sports/${sportKey}/events/${opts.eventId}/odds`,
+        params,
+      );
+    }
+    return this.request(`/v1/sports/${sportKey}/odds`, params);
   }
 
   getOddsHistory(
@@ -289,11 +288,12 @@ export class PropLineClient {
   getEventBestLine(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string; bookmakers?: string } = {},
+    opts: { markets?: string; bookmakers?: string; includeLinks?: boolean } = {},
   ): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/events/${eventId}/best-line`, {
       markets: opts.markets,
       bookmakers: opts.bookmakers,
+      includeLinks: opts.includeLinks ? "true" : undefined,
     });
   }
 }

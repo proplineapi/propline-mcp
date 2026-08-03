@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.17.1";
+export const VERSION = "0.18.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -176,6 +176,11 @@ const tools: ToolDef[] = [
           description:
             "Game-period filter. Omitted = full-game markets only. Canonical codes: q1..q4 (quarters), h1/h2 (halves), p1..p3 (hockey periods), i1..i9 (innings), f3/f5/f7 (first N innings). Comma-separated for multiple. 'all' = include every period alongside full-game.",
         },
+        include_links: {
+          type: "boolean",
+          description:
+            "When true, each bookmaker block carries a link — that book's public event-page URL for click-out (Bovada/DraftKings/FanDuel/BetMGM/Kalshi/Polymarket/Smarkets; others null). Plain navigation, no affiliate tagging.",
+        },
       },
       required: ["sport_key"],
       additionalProperties: false,
@@ -186,6 +191,7 @@ const tools: ToolDef[] = [
         markets: args.markets as string | undefined,
         bookmakers: args.bookmakers as string | undefined,
         period: args.period as string | undefined,
+        includeLinks: args.include_links as boolean | undefined,
       }),
   },
   {
@@ -787,6 +793,11 @@ const tools: ToolDef[] = [
           description:
             "Comma-separated book keys (e.g. 'draftkings,fanduel') to shop only those books.",
         },
+        include_links: {
+          type: "boolean",
+          description:
+            "When true, every price row carries a link — that book's public event-page URL, the click-out for 'go bet this'. Books without a verified URL template return null.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -798,6 +809,7 @@ const tools: ToolDef[] = [
         {
           markets: args.markets as string | undefined,
           bookmakers: args.bookmakers as string | undefined,
+          includeLinks: args.include_links as boolean | undefined,
         },
       ),
   },
