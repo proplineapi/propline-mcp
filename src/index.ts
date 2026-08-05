@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.18.1";
+export const VERSION = "0.18.2";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -532,9 +532,15 @@ const tools: ToolDef[] = [
   {
     name: "propline_get_event_stats",
     description:
-      "Book-agnostic raw box-score stats for a completed event. Returns " +
-      "per-player stats (e.g. strikeouts, hits, points, rebounds, " +
-      "shots-on-goal) decoupled from any sportsbook's lines. Free tier.",
+      "Book-agnostic raw box-score stats for an event. Returns per-player " +
+      "stats (e.g. strikeouts, hits, points, rebounds, shots-on-goal) " +
+      "decoupled from any sportsbook's lines. LIVE during games for major " +
+      "US sports (MLB + WNBA now; NFL, NCAAF, NBA, NHL at season start): " +
+      "while the event's status is in_progress, stats refresh ~every 90 " +
+      "seconds with cumulative in-game values — use this to answer 'how " +
+      "is this prop tracking right now'. Treat in-progress numbers as " +
+      "partial; at status=final they are the official box score. Other " +
+      "sports populate stats at game completion. Free tier.",
     inputSchema: {
       type: "object",
       properties: {
