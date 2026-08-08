@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.18.3";
+export const VERSION = "0.19.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -181,6 +181,11 @@ const tools: ToolDef[] = [
           description:
             "When true, each bookmaker block carries a link — that book's public event-page URL for click-out (Bovada/DraftKings/FanDuel/BetMGM/Kalshi/Polymarket/Smarkets; others null). Plain navigation, no affiliate tagging.",
         },
+        include_book_ids: {
+          type: "boolean",
+          description:
+            "When true, each bookmaker block carries book_event_id and each outcome carries book_outcome_id — that book's OWN ids for the event and the priced selection, for joining onto a book's native feed by id instead of matching team/player names and lines. Kalshi ships both (event ticker + per-contract market ticker, e.g. KXMLBGAME-26AUG08NYYBOS-NYY); most other books ship an event id; books without a stable id return null. NB a two-sided market can share ONE book_outcome_id across both legs — a Kalshi contract is binary, so Over/Under are its YES/NO sides; the outcome's name says which side.",
+        },
       },
       required: ["sport_key"],
       additionalProperties: false,
@@ -192,6 +197,7 @@ const tools: ToolDef[] = [
         bookmakers: args.bookmakers as string | undefined,
         period: args.period as string | undefined,
         includeLinks: args.include_links as boolean | undefined,
+        includeBookIds: args.include_book_ids as boolean | undefined,
       }),
   },
   {

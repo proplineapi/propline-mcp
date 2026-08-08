@@ -98,6 +98,7 @@ export class PropLineClient {
       eventId?: string | number;
       period?: string;
       includeLinks?: boolean;
+      includeBookIds?: boolean;
     } = {},
   ): Promise<unknown> {
     const params = {
@@ -105,6 +106,7 @@ export class PropLineClient {
       bookmakers: opts.bookmakers,
       period: opts.period,
       includeLinks: opts.includeLinks ? "true" : undefined,
+      includeBookIds: opts.includeBookIds ? "true" : undefined,
     };
     if (opts.eventId) {
       return this.request(
