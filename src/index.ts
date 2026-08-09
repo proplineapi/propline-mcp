@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.19.0";
+export const VERSION = "0.20.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -281,13 +281,20 @@ const tools: ToolDef[] = [
   {
     name: "propline_get_odds_closing",
     description:
-      "Hobby+ endpoint. Returns the closing line per (book, market, " +
-      "outcome) for an event — the last snapshot at or before " +
-      "commence_time. Canonical CLV-tracking helper; one call returns " +
-      "the data point your bet should be measured against, instead of " +
-      "fetching full history and post-processing. Each outcome carries " +
-      "a closing_at field with the snapshot's recorded_at. Free tier " +
-      "returns redacted structure with upgrade pointer.",
+      "Hobby+ endpoint. Returns the OPENING and CLOSING line per (book, " +
+      "market, outcome) for an event. Closing = the last snapshot at or " +
+      "before commence_time (price/point/closing_at); opening = the " +
+      "first snapshot in the same 14-day pre-kickoff window " +
+      "(opening_price/opening_point/opening_at). Canonical CLV-tracking " +
+      "helper; one call returns both data points your bet should be " +
+      "measured against, instead of fetching full history and " +
+      "post-processing. Compare the POINTS as well as the prices — on " +
+      "spreads and totals the number moves as much as the price, so a " +
+      "price-only comparison mis-measures those markets. " +
+      "opening_age_seconds says how long before kickoff the opener was " +
+      "recorded: the archive starts 2026-04, so a small value means " +
+      "PropLine started polling late and this is not the book's true " +
+      "open. Free tier returns redacted structure with upgrade pointer.",
     inputSchema: {
       type: "object",
       properties: {
