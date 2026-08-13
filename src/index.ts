@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.20.0";
+export const VERSION = "0.21.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -54,6 +54,39 @@ function client(): PropLineClient {
     _client = new PropLineClient({ apiKey: apiKey ?? DEMO_KEY, baseUrl });
   }
   return _client;
+}
+
+/**
+ * Apply propline_get_event_ev's `min_ev_pct` to an /ev response.
+ *
+ * Lives here rather than on the server because /ev has no such
+ * parameter — the threshold is a convenience this tool offers so an
+ * agent can ask for "plays above 2% EV" in one call. Lines left with no
+ * qualifying outcome are dropped. A missing/non-numeric threshold, or a
+ * response that isn't shaped as expected, passes straight through.
+ */
+export function filterByMinEv(res: unknown, minEvPct?: number): unknown {
+  if (typeof minEvPct !== "number" || Number.isNaN(minEvPct)) return res;
+  if (!res || typeof res !== "object") return res;
+  const body = res as { lines?: unknown };
+  if (!Array.isArray(body.lines)) return res;
+
+  const lines = body.lines
+    .map((line) => {
+      const l = line as { outcomes?: unknown };
+      if (!Array.isArray(l.outcomes)) return line;
+      const outcomes = l.outcomes.filter((o) => {
+        const ev = (o as { ev_pct?: unknown }).ev_pct;
+        return typeof ev === "number" && ev >= minEvPct;
+      });
+      return { ...(line as object), outcomes };
+    })
+    .filter((line) => {
+      const outcomes = (line as { outcomes?: unknown }).outcomes;
+      return Array.isArray(outcomes) ? outcomes.length > 0 : true;
+    });
+
+  return { ...(res as object), lines };
 }
 
 // ---------------------------------------------------------------------
@@ -150,9 +183,11 @@ const tools: ToolDef[] = [
       "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
       "Underdog, PrizePicks, Kalshi, Polymarket, Matchbook, Smarkets " +
       "— coverage varies by sport). Underdog Fantasy outcomes carry a " +
-      "payout_multiplier (DFS boost/discount factor; null = standard pick, " +
-      "e.g. 1.5 = boost, 0.75 = discount) — skip non-null values when " +
-      "comparing DFS lines to sportsbook consensus.",
+      "payout_multiplier on EVERY outcome (1.0 = standard pick, e.g. " +
+      "1.5 = boost, 0.75 = discount; null means the book is not " +
+      "Underdog) — keep only payout_multiplier == 1.0 when comparing " +
+      "DFS lines to sportsbook consensus, since filtering on non-null " +
+      "would drop every Underdog line.",
     inputSchema: {
       type: "object",
       properties: {
@@ -754,17 +789,29 @@ const tools: ToolDef[] = [
     name: "propline_get_event_ev",
     description:
       "Pro-tier endpoint. Returns cross-book +EV per outcome for an " +
-      "event. We anchor on Pinnacle's sharp line, remove vig, derive a " +
-      "no-vig fair line, and compute EV% per book at the same line. " +
-      "Outcomes are sorted with +EV plays floated to the top of each " +
-      "line group. PrizePicks is excluded from EV math (DFS payouts " +
-      "aren't comparable to per-book prices).",
+      "event. We anchor on a sharp book, remove vig, derive a no-vig " +
+      "fair line, and compute EV% per book at the same line. Outcomes " +
+      "are sorted with +EV plays floated to the top of each line group. " +
+      "PrizePicks is excluded from EV math (DFS payouts aren't " +
+      "comparable to per-book prices). The anchor is chosen PER LINE in " +
+      "the order pinnacle → polymarket → kalshi → bovada, and each " +
+      "line's fair_source names the one used — report the anchor from " +
+      "fair_source per line, never assume Pinnacle anchored all of them. " +
+      "Optional bookmakers filter prices to the books the user holds " +
+      "accounts at; it never changes the anchor, so filtering to " +
+      "DraftKings still measures DraftKings against Pinnacle.",
     inputSchema: {
       type: "object",
       properties: {
         sport_key: { type: "string" },
         event_id: { type: ["string", "number"] },
         markets: { type: "string" },
+        bookmakers: {
+          type: "string",
+          description:
+            "Comma-separated book keys (e.g. 'draftkings,fanduel') to " +
+            "price only the user's books. Narrows prices, not the anchor.",
+        },
         min_ev_pct: {
           type: "number",
           description: "Filter to outcomes with EV ≥ this percent (e.g. 2.0).",
@@ -773,15 +820,21 @@ const tools: ToolDef[] = [
       required: ["sport_key", "event_id"],
       additionalProperties: false,
     },
-    handler: (args) =>
-      client().getEventEv(
+    handler: async (args) => {
+      const res = await client().getEventEv(
         args.sport_key as string,
         args.event_id as string | number,
         {
           markets: args.markets as string | undefined,
-          minEvPct: args.min_ev_pct as number | undefined,
+          bookmakers: args.bookmakers as string | undefined,
         },
-      ),
+      );
+      // min_ev_pct is applied HERE, client-side. It used to be forwarded
+      // as a query param that /ev has never accepted, so the threshold
+      // was silently dropped and the model got every outcome back while
+      // the tool claimed to have filtered.
+      return filterByMinEv(res, args.min_ev_pct as number | undefined);
+    },
   },
   {
     name: "propline_get_best_line",
