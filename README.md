@@ -113,6 +113,21 @@ PropLine is API-compatible at the response level (same `bookmakers[].markets[].o
 
 Pricing: free at 1,000 req/day (vs their 500/month), Pro at $19/mo for 25,000 req/day, Streaming at $79/mo for 1,000,000 req/day. No credit math.
 
+## Links
+
+- **Website**: [prop-line.com](https://prop-line.com/?ref=mcp)
+- **API Docs**: [prop-line.com/docs](https://prop-line.com/docs?ref=mcp)
+- **Recipes** (code for common jobs): [prop-line.com/recipes](https://prop-line.com/recipes?ref=mcp)
+- **Odds API by sport and market** (live line, books, graded hit rate): [prop-line.com/odds-api](https://prop-line.com/odds-api?ref=mcp)
+- **Prop resolution** (every prop graded against the box score): [prop-line.com/prop-resolution-api](https://prop-line.com/prop-resolution-api?ref=mcp)
+- **Cross-book +EV**: [prop-line.com/ev](https://prop-line.com/ev?ref=mcp)
+- **Pricing**: [prop-line.com/pricing](https://prop-line.com/pricing?ref=mcp)
+- **Dashboard**: [prop-line.com/dashboard](https://prop-line.com/dashboard)
+- **OpenAPI reference**: [api.prop-line.com/docs](https://api.prop-line.com/docs)
+- **For AI agents** (llms.txt, MCP setup): [prop-line.com/for-ai-agents](https://prop-line.com/for-ai-agents?ref=mcp)
+- **Python SDK**: [`pip install propline`](https://pypi.org/project/propline/)
+- **Node SDK**: [`npm install propline`](https://www.npmjs.com/package/propline)
+
 ## License
 
 MIT
