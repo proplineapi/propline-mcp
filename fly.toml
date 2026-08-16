@@ -1,0 +1,41 @@
+# Hosted Streamable HTTP endpoint for the PropLine MCP server.
+#   https://mcp.prop-line.com/mcp
+# Same image as the stdio build (Dockerfile); only the command differs.
+# Deploy: flyctl deploy --app propline-mcp   (from this directory)
+
+app = "propline-mcp"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  MCP_PUBLIC_URL = "https://mcp.prop-line.com"
+
+[processes]
+  app = "node dist/http.js"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 400
+
+  [[http_service.checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"

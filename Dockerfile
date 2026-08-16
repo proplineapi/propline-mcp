@@ -12,4 +12,6 @@ COPY tsconfig.json tsup.config.ts ./
 COPY src ./src
 RUN npm run build
 
-ENTRYPOINT ["node", "dist/index.js"]
+# Default = stdio (what Glama / Smithery sandboxes run). The hosted HTTP
+# server is the same image with a different command — see fly.toml.
+CMD ["node", "dist/index.js"]

@@ -46,6 +46,35 @@ The model uses these tools transparently:
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
 | `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
 
+## Hosted endpoint (no install)
+
+The same 21 tools are served over **Streamable HTTP** at
+
+```
+https://mcp.prop-line.com/mcp
+```
+
+Use it from any remote-capable client — nothing to install, nothing to run.
+
+| Client | How |
+|---|---|
+| Claude Code | `claude mcp add --transport http propline https://mcp.prop-line.com/mcp` |
+| Claude.ai / Claude Desktop | Settings → Connectors → Add custom connector → URL above |
+| Cursor | Settings → MCP → Add server → type `http`, URL above ([one-click](https://cursor.com/en/install-mcp?name=propline&config=eyJ1cmwiOiJodHRwczovL21jcC5wcm9wLWxpbmUuY29tL21jcCJ9)) |
+| ChatGPT (developer mode) | Settings → Connectors → Create → MCP server URL above |
+| Any client | Streamable HTTP, endpoint `/mcp`; `GET /` returns a JSON manifest |
+
+**Auth is per request.** Send your PropLine key as `Authorization: Bearer <key>` (or `X-API-Key: <key>`, or `?apiKey=<key>` for clients that cannot set headers). With no key the endpoint falls back to the shared free demo key — every tool works, paid features are redacted, limits are pooled. Keys are used for the one request and never stored.
+
+Claude Code with your own key:
+
+```bash
+claude mcp add --transport http propline https://mcp.prop-line.com/mcp \
+  --header "Authorization: Bearer YOUR_KEY"
+```
+
+The stdio build below (`npx -y propline-mcp`) is the same code; pick whichever your client prefers.
+
 ## Zero-config quick start
 
 No key needed to try it. The server falls back to a shared public demo key, so this just works:
@@ -82,7 +111,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. The hammer icon should show 21 PropLine tools.
+Restart Claude Desktop. The hammer icon should show 21 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
 
 #### Claude Code
 
@@ -115,6 +144,7 @@ Pricing: free at 1,000 req/day (vs their 500/month), Pro at $19/mo for 25,000 re
 
 ## Links
 
+- **Hosted MCP endpoint**: `https://mcp.prop-line.com/mcp` (Streamable HTTP)
 - **Website**: [prop-line.com](https://prop-line.com/?ref=mcp)
 - **API Docs**: [prop-line.com/docs](https://prop-line.com/docs?ref=mcp)
 - **Recipes** (code for common jobs): [prop-line.com/recipes](https://prop-line.com/recipes?ref=mcp)

@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts"],
+  entry: ["src/index.ts", "src/http.ts"],
   format: ["esm"],
   // The MCP SDK is ESM-only, so we ship a single ESM build with a shebang
   // entry point. CommonJS users on Node 18+ can still run via npx.

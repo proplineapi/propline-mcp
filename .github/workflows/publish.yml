@@ -29,18 +29,18 @@ jobs:
         run: |
           TAG_VERSION="${GITHUB_REF_NAME#v}"
           PKG_VERSION=$(node -p "require('./package.json').version")
-          INDEX_VERSION=$(grep -E '^export const VERSION = ' src/index.ts | sed -E 's/.*"(.*)".*/\1/')
+          INDEX_VERSION=$(grep -E '^export const VERSION = ' src/server.ts | sed -E 's/.*"(.*)".*/\1/')
           SERVER_VERSION=$(node -p "require('./server.json').version")
           SERVER_PKG_VERSION=$(node -p "require('./server.json').packages[0].version")
           MCP_NAME=$(node -p "require('./package.json').mcpName")
           SERVER_NAME=$(node -p "require('./server.json').name")
           echo "tag: $TAG_VERSION"
           echo "package.json: $PKG_VERSION"
-          echo "src/index.ts: $INDEX_VERSION"
+          echo "src/server.ts: $INDEX_VERSION"
           echo "server.json: $SERVER_VERSION (package $SERVER_PKG_VERSION)"
           if [ "$TAG_VERSION" != "$PKG_VERSION" ] || [ "$TAG_VERSION" != "$INDEX_VERSION" ] \
              || [ "$TAG_VERSION" != "$SERVER_VERSION" ] || [ "$TAG_VERSION" != "$SERVER_PKG_VERSION" ]; then
-            echo "::error::tag, package.json, src/index.ts VERSION, and server.json (.version + .packages[0].version) must all match"
+            echo "::error::tag, package.json, src/server.ts VERSION, and server.json (.version + .packages[0].version) must all match"
             exit 1
           fi
           # The MCP Registry verifies npm ownership by matching package.json

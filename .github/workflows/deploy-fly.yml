@@ -1,0 +1,41 @@
+# Redeploy the hosted Streamable HTTP endpoint (https://mcp.prop-line.com/mcp)
+# on every push to main. Separate from publish.yml (npm, tag-triggered): the
+# hosted server tracks main so a fix reaches remote clients without a version
+# bump, while npm keeps semver.
+name: Deploy hosted MCP to Fly
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "package.json"
+      - "package-lock.json"
+      - "tsconfig.json"
+      - "tsup.config.ts"
+      - "Dockerfile"
+      - "fly.toml"
+      - ".github/workflows/deploy-fly.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-fly
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --app propline-mcp --ha=false
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+      - name: Smoke the live endpoint
+        run: |
+          curl -fsS https://mcp.prop-line.com/health
+          N=$(curl -fsS -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
+            -X POST https://mcp.prop-line.com/mcp -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' \
+            | grep -o '"name":"propline_[a-z_0-9]*"' | wc -l)
+          echo "tools/list returned $N tools"
+          test "$N" -ge 20

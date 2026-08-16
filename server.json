@@ -2,19 +2,33 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.proplineapi/propline-mcp",
   "title": "PropLine \u2014 Sports Betting Odds & Prop Resolution",
-  "description": "Live sports betting odds, cross-book +EV, and graded player-prop resolution across 16 books.",
+  "description": "Live sports betting odds, cross-book +EV, and graded player-prop resolution across 21 books. Hosted Streamable HTTP endpoint at https://mcp.prop-line.com/mcp, or run locally via npm.",
   "websiteUrl": "https://prop-line.com",
   "repository": {
     "url": "https://github.com/proplineapi/propline-mcp",
     "source": "github"
   },
-  "version": "0.22.1",
+  "version": "0.23.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.prop-line.com/mcp",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <PropLine API key>. Optional \u2014 without it the shared free demo key is used (paid features redacted, pooled limits). Free key at https://prop-line.com",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ],
   "packages": [
     {
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "propline-mcp",
-      "version": "0.22.1",
+      "version": "0.23.0",
       "transport": {
         "type": "stdio"
       },
