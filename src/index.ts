@@ -22,7 +22,7 @@ import {
 
 import { PropLineClient, PropLineHTTPError } from "./client.js";
 
-export const VERSION = "0.21.0";
+export const VERSION = "0.22.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -187,7 +187,12 @@ const tools: ToolDef[] = [
       "1.5 = boost, 0.75 = discount; null means the book is not " +
       "Underdog) — keep only payout_multiplier == 1.0 when comparing " +
       "DFS lines to sportsbook consensus, since filtering on non-null " +
-      "would drop every Underdog line.",
+      "would drop every Underdog line. Each market carries suspended_at: " +
+      "null while on the board, set when that book pulled the market " +
+      "pregame (late scratch, dropped market type) — its outcomes are then " +
+      "the last quoted legs, not a live price. Treat a suspended market " +
+      "as unbettable and, if several books show it for one player, as a " +
+      "probable scratch.",
     inputSchema: {
       type: "object",
       properties: {
