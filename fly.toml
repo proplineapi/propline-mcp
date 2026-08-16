@@ -36,6 +36,11 @@ primary_region = "iad"
     method = "GET"
     path = "/health"
 
+# DEDICATED CPU, like every other PropLine group (2026-08-16). Shared-CPU
+# machines on Fly have been starved by noisy neighbours (42-92% steal on the
+# DB, app and scraper tiers) with every health check green; a stolen core
+# here means every hosted tool call slows for every user. performance-1x is
+# the smallest dedicated preset; 2 GB is its RAM floor.
 [[vm]]
-  size = "shared-cpu-1x"
-  memory = "256mb"
+  size = "performance-1x"
+  memory = "2gb"
