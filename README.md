@@ -145,6 +145,7 @@ Pricing: free at 1,000 req/day (vs their 500/month), Pro at $19/mo for 25,000 re
 ## Links
 
 - **Hosted MCP endpoint**: `https://mcp.prop-line.com/mcp` (Streamable HTTP)
+- **Privacy policy**: [prop-line.com/privacy](https://prop-line.com/privacy)
 - **Website**: [prop-line.com](https://prop-line.com/?ref=mcp)
 - **API Docs**: [prop-line.com/docs](https://prop-line.com/docs?ref=mcp)
 - **Recipes** (code for common jobs): [prop-line.com/recipes](https://prop-line.com/recipes?ref=mcp)

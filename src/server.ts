@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.23.1";
+export const VERSION = "0.24.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -115,6 +115,8 @@ export function filterByMinEv(res: unknown, minEvPct?: number): unknown {
 
 interface ToolDef {
   name: string;
+  /** Human-readable name, surfaced as the MCP `title` annotation. */
+  title: string;
   description: string;
   inputSchema: {
     type: "object";
@@ -130,6 +132,7 @@ interface ToolDef {
 export const tools: ToolDef[] = [
   {
     name: "propline_list_sports",
+    title: "List sports",
     description:
       "List all sports PropLine currently polls. Returns sport keys " +
       "(e.g. baseball_mlb, basketball_nba, soccer_epl) along with human " +
@@ -144,6 +147,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_list_events",
+    title: "List events",
     description:
       "List upcoming events for a sport. Returns each event's id, " +
       "home_team, away_team, commence_time. Use the returned event_id " +
@@ -172,6 +176,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_list_event_markets",
+    title: "List event markets",
     description:
       "List the market types available for a specific event (e.g. h2h, " +
       "spreads, totals, player_points, pitcher_strikeouts). Useful when " +
@@ -193,6 +198,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_odds",
+    title: "Get odds",
     description:
       "Get live odds. If event_id is supplied, returns full per-event " +
       "props for that event; otherwise returns bulk game-line odds for " +
@@ -262,6 +268,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_odds_history",
+    title: "Get odds history",
     description:
       "Hobby+ endpoint. Returns the historical line-movement snapshot " +
       "series for an event (every recorded price/point change per " +
@@ -340,6 +347,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_odds_closing",
+    title: "Get opening & closing lines",
     description:
       "Hobby+ endpoint. Returns the OPENING and CLOSING line per (book, " +
       "market, outcome) for an event. Closing = the last snapshot at or " +
@@ -388,6 +396,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_export_odds_history",
+    title: "Export odds history",
     description:
       "Backfill-pass / Enterprise only. Bulk line-movement tick history " +
       "as CSV — every recorded odds snapshot (price + line, per book, " +
@@ -443,6 +452,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_futures",
+    title: "Get futures",
     description:
       "Free-tier endpoint. Returns season-long futures (outright) markets " +
       "for a sport — championship/Super Bowl/division/conference winners, " +
@@ -470,6 +480,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_scores",
+    title: "Get scores",
     description:
       "Free-tier endpoint. Returns recent and live game scores plus " +
       "status (scheduled, live, final) for a sport. Useful for: 'is " +
@@ -494,6 +505,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_dfs_payouts",
+    title: "Get DFS payouts",
     description:
       "Free-tier reference math. Returns the PrizePicks Power Play (all legs " +
       "must hit) and Flex Play (partial payouts) entry payout schedule for " +
@@ -524,6 +536,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_mlb_grand_salami",
+    title: "Get MLB Grand Salami",
     description:
       "Free-tier endpoint. Returns the synthetic daily MLB Grand Salami " +
       "for a given UTC date — total runs scored across every MLB game " +
@@ -552,6 +565,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_nhl_daily_goals_total",
+    title: "Get NHL daily goals total",
     description:
       "Free-tier endpoint. Returns the synthetic daily NHL goals total " +
       "(hockey's equivalent of the MLB Grand Salami) for a given UTC " +
@@ -581,6 +595,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_resolution_summary",
+    title: "Get resolution summary",
     description:
       "Free-tier endpoint. Returns the factual volume of player props " +
       "PropLine has graded against real box scores over the last N days " +
@@ -604,6 +619,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_event_stats",
+    title: "Get event stats",
     description:
       "Book-agnostic raw box-score stats for an event. Returns per-player " +
       "stats (e.g. strikeouts, hits, points, rebounds, shots-on-goal) " +
@@ -631,6 +647,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_event_results",
+    title: "Get graded prop results",
     description:
       "Pro-tier endpoint. Returns graded prop outcomes for a completed " +
       "event — every Over/Under marked won, lost, push, or void with " +
@@ -655,6 +672,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_event_context",
+    title: "Get event context",
     description:
       "Game context for an event — the conditions a prop settles under. " +
       "MLB: probable starting pitchers and their throwing hand (L/R/S — " +
@@ -682,6 +700,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_event_movement",
+    title: "Get line movement & steam",
     description:
       "Line movement + steam detection from the snapshot tick history. " +
       "Per (book, market, outcome): opening line, latest line, signed " +
@@ -729,6 +748,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_player_history",
+    title: "Get player prop history",
     description:
       "Player prop history across recent games. Returns each prior prop " +
       "this player took with line, prices, resolution, and actual value. " +
@@ -768,6 +788,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_player_trends",
+    title: "Get player trends",
     description:
       "Hit-rate trends / last-N-games over rate for a player — unique to " +
       "PropLine's prop-resolution data. For each market the player has " +
@@ -812,6 +833,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_event_ev",
+    title: "Get cross-book +EV",
     description:
       "Pro-tier endpoint. Returns cross-book +EV per outcome for an " +
       "event. We anchor on a sharp book, remove vig, derive a no-vig " +
@@ -863,6 +885,7 @@ export const tools: ToolDef[] = [
   },
   {
     name: "propline_get_best_line",
+    title: "Get best line",
     description:
       "Cross-book line shopping (Hobby+ for prices; free tier gets the " +
       "full structure with book identities + best-first ranking but " +
@@ -932,8 +955,19 @@ export function createServer(): Server {
   server.setRequestHandler(ListToolsRequestSchema  , async () => ({
     tools: tools.map((t) => ({
       name: t.name,
+      title: t.title,
       description: t.description,
       inputSchema: t.inputSchema,
+      // Every PropLine tool is a READ of the odds API — none creates,
+      // changes or deletes anything. Directories (Claude connectors, Cursor)
+      // require these hints; clients use them to skip confirmation prompts.
+      annotations: {
+        title: t.title,
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
     })),
   }));
 
