@@ -45,10 +45,12 @@ The model uses these tools transparently:
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual (optional `dfs_odds_type` to scope to a PrizePicks flavor) |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
 | `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
+| `propline_list_webhooks` | Streaming Lite+: list webhook subscriptions (read-only, secrets masked) |
+| `propline_get_webhook_deliveries` | Streaming Lite+: recent delivery attempts for a webhook — status, HTTP code, attempts, payload; `before_id` pages backwards. The "why isn't my webhook firing" tool |
 
 ## Hosted endpoint (no install)
 
-The same 21 tools are served over **Streamable HTTP** at
+The same 23 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp

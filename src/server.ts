@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.24.0";
+export const VERSION = "0.25.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -932,6 +932,67 @@ export const tools: ToolDef[] = [
           includeLinks: args.include_links as boolean | undefined,
         },
       ),
+  },
+  // -- Webhooks: READ-ONLY on purpose. Create returns the HMAC secret exactly
+  // once (a credential in a model context); update/delete/test are
+  // side-effectful. The read pair is the self-service debugging surface.
+  {
+    name: "propline_list_webhooks",
+    title: "List webhooks",
+    description:
+      "List the API key's webhook subscriptions (Streaming Lite tier and " +
+      "up; other tiers get a 403 with an upgrade URL). Read-only: signing " +
+      "secrets are always masked, and this server deliberately has no " +
+      "create/update/delete tools — manage subscriptions via the REST API " +
+      "or SDKs. Each row shows url, subscribed events (line_movement, " +
+      "resolution, steam, market_suspended), filters and active status. " +
+      "Use this first to find the webhook id for " +
+      "propline_get_webhook_deliveries.",
+    inputSchema: {
+      type: "object",
+      properties: {},
+      additionalProperties: false,
+    },
+    handler: () => client().listWebhooks(),
+  },
+  {
+    name: "propline_get_webhook_deliveries",
+    title: "Get webhook deliveries",
+    description:
+      "Recent delivery attempts for one webhook (Streaming Lite tier and " +
+      "up), newest first — the debugging surface for 'why isn't my webhook " +
+      "firing'. Each row: status (pending/success/failed), HTTP " +
+      "response_code, attempts, delivered_at and the payload that was " +
+      "sent. A pending row with attempts > 0 is mid-retry-backoff; " +
+      "status 'failed' with response_code null means the endpoint was " +
+      "unreachable or timed out (8s). Page backwards through a deep queue " +
+      "with before_id = the smallest id on the previous page; a page " +
+      "shorter than limit is the last one.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        webhook_id: {
+          type: "number",
+          description: "Webhook id (from propline_list_webhooks).",
+        },
+        limit: {
+          type: "number",
+          description: "Rows per page, 1-200. Default 50.",
+        },
+        before_id: {
+          type: "number",
+          description:
+            "Cursor: smallest delivery id from the previous page.",
+        },
+      },
+      required: ["webhook_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().listWebhookDeliveries(args.webhook_id as number, {
+        limit: args.limit as number | undefined,
+        beforeId: args.before_id as number | undefined,
+      }),
   },
 ];
 

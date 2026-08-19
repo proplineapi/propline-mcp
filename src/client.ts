@@ -302,4 +302,25 @@ export class PropLineClient {
       includeLinks: opts.includeLinks ? "true" : undefined,
     });
   }
+
+  // ----- Webhooks (READ-ONLY on purpose) -----
+  // Create is excluded because it returns the HMAC signing secret exactly
+  // once — through MCP that lands in a model context window and whatever
+  // logs it. Update/delete/test are excluded as side-effectful. The read
+  // surface (list shows the secret MASKED; deliveries is the debugging
+  // log) is what an agent needs to answer "why isn't my webhook firing".
+
+  listWebhooks(): Promise<unknown> {
+    return this.request("/v1/webhooks");
+  }
+
+  listWebhookDeliveries(
+    webhookId: string | number,
+    opts: { limit?: number; beforeId?: number } = {},
+  ): Promise<unknown> {
+    return this.request(`/v1/webhooks/${webhookId}/deliveries`, {
+      limit: opts.limit,
+      before_id: opts.beforeId,
+    });
+  }
 }
