@@ -72,6 +72,44 @@ export class PropLineClient {
     }
   }
 
+  /**
+   * POST with a JSON body. Kept separate from `request` because every other
+   * endpoint on this server is a GET with query params; folding a body into
+   * that signature would make the common case harder to read.
+   */
+  private async postRequest<T = unknown>(
+    path: string,
+    body: unknown,
+  ): Promise<T> {
+    const url = new URL(this.baseUrl + path);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      const r = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-API-Key": this.apiKey,
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "User-Agent": "propline-mcp/0.1.0",
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      const text = await r.text();
+      if (!r.ok) {
+        throw new PropLineHTTPError(r.status, text);
+      }
+      try {
+        return JSON.parse(text) as T;
+      } catch {
+        return text as unknown as T;
+      }
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
   // ----- Discovery -----
 
   listSports(): Promise<unknown> {
@@ -157,6 +195,15 @@ export class PropLineClient {
       `/v1/sports/${sportKey}/events/${eventId}/odds/closing`,
       { markets: opts.markets, bookmakers: opts.bookmakers, period: opts.period },
     );
+  }
+
+  /**
+   * Grade placed bets against their closing lines (CLV). Hobby+.
+   * See the propline_grade_clv tool description for the semantics that
+   * matter when presenting the result.
+   */
+  gradeClv(bets: unknown[]): Promise<unknown> {
+    return this.postRequest("/v1/clv/grade", bets);
   }
 
   // ----- Bulk exports -----

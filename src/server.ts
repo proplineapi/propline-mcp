@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.25.3";
+export const VERSION = "0.26.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -393,6 +393,95 @@ export const tools: ToolDef[] = [
           period: args.period as string | undefined,
         },
       ),
+  },
+  {
+    name: "propline_grade_clv",
+    title: "Grade bets against the close (CLV)",
+    description:
+      "Hobby+ endpoint. Grades PLACED bets against their closing lines. " +
+      "Closing line value is the only durable proxy for whether a bettor " +
+      "has edge: did the price they took beat the number the market " +
+      "settled on? Send the bets and each comes back with its closing " +
+      "price, the de-vigged closing fair probability, CLV, and — once the " +
+      "game settles — the graded resolution and actual stat value, plus a " +
+      "portfolio summary. Stateless: nothing is stored. " +
+      "TWO CLV numbers are returned deliberately. clv_pct is " +
+      "price-vs-price: familiar and quotable, but VIG-BLIND, so it " +
+      "flatters a bet taken on the juicy side of a wide market. " +
+      "ev_vs_close_pct scores the price against the DE-VIGGED close and " +
+      "is the honest one — report that one when the user asks whether " +
+      "they got value. The de-vig anchors to the SHARPEST book quoting " +
+      "that line at close (fair_source), not the book they bet at, " +
+      "because de-vigging their own book always returns a negative " +
+      "number (they paid its hold). " +
+      "Bets whose event has not started carry closing_is_final=false, " +
+      "are counted in summary.pending, and are EXCLUDED from the summary " +
+      "averages: before kickoff the 'closing' price is just the latest " +
+      "price, so CLV is ~0 by construction — do not present those as " +
+      "results. Matching is fail-closed: a bet that cannot be pinned to " +
+      "exactly one stored outcome returns matched=false with an " +
+      "unmatched_reason instead of a wrong match, so surface those rows " +
+      "rather than silently dropping them. Max 500 bets per request. " +
+      "Free tier returns structure with every number nulled.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        bets: {
+          type: "array",
+          maxItems: 500,
+          description:
+            "Placed bets to grade. selection is the subject: player name " +
+            "for a prop, team name for a game line.",
+          items: {
+            type: "object",
+            properties: {
+              ref: {
+                type: "string",
+                description:
+                  "Echoed back untouched, so rows can be aligned without relying on order.",
+              },
+              sport_key: { type: "string" },
+              event_id: { type: ["string", "number"] },
+              market: { type: "string" },
+              bookmaker: { type: "string" },
+              selection: { type: "string" },
+              side: {
+                type: "string",
+                description:
+                  "'Over' or 'Under' for two-way markets. Omit for YES-only props where the player IS the outcome.",
+              },
+              point: { type: "number" },
+              period: {
+                type: "string",
+                description:
+                  "Canonical period code (q1, h1, p1, f5). Omit for full-game markets.",
+              },
+              price: {
+                type: "number",
+                description: "American odds actually taken, e.g. -110 or 145.",
+              },
+              stake: {
+                type: "number",
+                description: "Defaults to 1 unit when computing profit_units.",
+              },
+            },
+            required: [
+              "sport_key",
+              "event_id",
+              "market",
+              "bookmaker",
+              "selection",
+              "price",
+            ],
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["bets"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().gradeClv(args.bets as unknown[]),
   },
   {
     name: "propline_export_odds_history",

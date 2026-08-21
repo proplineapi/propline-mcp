@@ -30,6 +30,7 @@ The model uses these tools transparently:
 | `propline_get_odds` | Live odds — bulk by sport or full props per event. Accepts `period` (q1/h1/p1/f5/…) to scope to game-period markets. |
 | `propline_get_odds_history` | Hobby+: snapshot history per outcome; supports `period` (q1/h1/…) plus time-window filters (from/to, relative_from/relative_to, interval, changes_only) |
 | `propline_get_odds_closing` | Hobby+: opening **and** closing line per (book, market, outcome) — CLV helper. Accepts `period` to scope to a specific game period. |
+| `propline_grade_clv` | Hobby+: grade **placed** bets against their closing lines. Returns closing price, de-vigged closing fair (`fair_source` = sharpest book at close, not yours), `clv_pct` (price-vs-price, vig-blind) **and** `ev_vs_close_pct` (the honest number), plus the graded result once the game settles. Fail-closed matching; unstarted events come back `closing_is_final: false` and are excluded from the averages. |
 | `propline_export_odds_history` | Backfill-pass / Enterprise: bulk line-movement tick history (every snapshot, per book) for a sport. Requires a `since`/`until` window; result capped to 200 rows (use the REST endpoint directly for the full file). |
 | `propline_get_futures` | Season-long futures — championship/division/conference winners, MVP + awards, season win totals — across Bovada/FanDuel/DraftKings/Pinnacle (free) |
 | `propline_get_scores` | Game scores + status (free) |
@@ -50,7 +51,7 @@ The model uses these tools transparently:
 
 ## Hosted endpoint (no install)
 
-The same 23 tools are served over **Streamable HTTP** at
+The same 24 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp
