@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.25.1";
+export const VERSION = "0.25.2";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
