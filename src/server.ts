@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.25.2";
+export const VERSION = "0.25.3";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -245,7 +245,7 @@ export const tools: ToolDef[] = [
         include_links: {
           type: "boolean",
           description:
-            "When true, each bookmaker block carries a link — that book's public event-page URL for click-out (Bovada/DraftKings/FanDuel/BetMGM/Kalshi/Polymarket/Smarkets; others null). Plain navigation, no affiliate tagging.",
+            "When true, each bookmaker block carries a link — that book's public event-page URL for click-out (Bovada/DraftKings/FanDuel/BetMGM/Kalshi/Polymarket/Smarkets; others null). Plain navigation, no affiliate tagging. Also adds app_link — a mobile app-open deep link that opens the book's native app on the fixture (ProphetX only today, null elsewhere).",
         },
         include_book_ids: {
           type: "boolean",
@@ -916,7 +916,7 @@ export const tools: ToolDef[] = [
         include_links: {
           type: "boolean",
           description:
-            "When true, every price row carries a link — that book's public event-page URL, the click-out for 'go bet this'. Books without a verified URL template return null.",
+            "When true, every price row carries a link — that book's public event-page URL, the click-out for 'go bet this'. Books without a verified URL template return null. Also adds app_link — a mobile app-open deep link (ProphetX only today, null elsewhere).",
         },
       },
       required: ["sport_key", "event_id"],
