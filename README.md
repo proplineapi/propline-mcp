@@ -24,7 +24,7 @@ The model uses these tools transparently:
 
 | Tool | What it does |
 |------|--------------|
-| `propline_list_sports` | Discover what sports PropLine polls (38 today) |
+| `propline_list_sports` | Discover what sports PropLine polls (54 today) |
 | `propline_list_events` | Upcoming events for a sport, with ids |
 | `propline_list_event_markets` | Available market types for an event |
 | `propline_get_odds` | Live odds — bulk by sport or full props per event. Accepts `period` (q1/h1/p1/f5/…) to scope to game-period markets. |
