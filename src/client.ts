@@ -308,6 +308,19 @@ export class PropLineClient {
     );
   }
 
+  // ----- Player game log / H2H -----
+
+  getPlayerGames(
+    sportKey: string,
+    playerName: string,
+    opts: { limit?: number; opponent?: string; statType?: string } = {},
+  ): Promise<unknown> {
+    return this.request(
+      `/v1/sports/${sportKey}/players/${encodeURIComponent(playerName)}/games`,
+      { limit: opts.limit, opponent: opts.opponent, stat_type: opts.statType },
+    );
+  }
+
   // ----- Player trends -----
 
   getPlayerTrends(

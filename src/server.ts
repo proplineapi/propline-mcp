@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.26.0";
+export const VERSION = "0.27.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -872,6 +872,65 @@ export const tools: ToolDef[] = [
         {
           limit: args.limit as number | undefined,
           markets: args.markets as string | undefined,
+        },
+      ),
+  },
+  {
+    name: "propline_get_player_games",
+    title: "Get player game log / H2H",
+    description:
+      "A player's recent games with every raw box-score stat per game — " +
+      "one call instead of one request per event. Use this to answer 'how " +
+      "has X actually performed lately?' and to build L5/L10/L20, season " +
+      "splits and head-to-head yourself. Pass `opponent` for H2H (accepts " +
+      "a full name, nickname or abbreviation — 'Boston Red Sox', 'Red " +
+      "Sox', 'BOS'); the limit applies AFTER that filter, so opponent + " +
+      "limit=10 means the last 10 MEETINGS, not the Boston games among the " +
+      "last 10 games. H2H is not capped to the current season. " +
+      "IMPORTANT: this is the raw box-score archive, NOT graded-prop " +
+      "history — it covers every game with a box score on file, including " +
+      "games no sportsbook priced, so a 'last 10 games' window here really " +
+      "is the last 10 games (one built from propline_get_player_trends " +
+      "silently skips unpriced games). It carries no line, price or grade; " +
+      "use propline_get_player_trends for hit rates against a posted line. " +
+      "`player_team`/`opponent`/`is_home` are null when the player's side " +
+      "can't be identified, and always for individual sports (tennis, " +
+      "golf, UFC) — report them as unknown rather than guessing.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        player_name: {
+          type: "string",
+          description:
+            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic'",
+        },
+        limit: {
+          type: "number",
+          description: "Games to return, 1-100. Default 20.",
+        },
+        opponent: {
+          type: "string",
+          description:
+            "Optional head-to-head filter — team name, nickname or abbreviation.",
+        },
+        stat_type: {
+          type: "string",
+          description:
+            "Optional comma-separated stat names to return; omit for all. Vocabulary is per-sport.",
+        },
+      },
+      required: ["sport_key", "player_name"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getPlayerGames(
+        args.sport_key as string,
+        args.player_name as string,
+        {
+          limit: args.limit as number | undefined,
+          opponent: args.opponent as string | undefined,
+          statType: args.stat_type as string | undefined,
         },
       ),
   },

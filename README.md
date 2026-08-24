@@ -43,6 +43,7 @@ The model uses these tools transparently:
 | `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+) |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_get_player_history` | Player prop history with resolution |
+| `propline_get_player_games` | Player game log — recent games with every raw box-score stat per game, one call instead of one per event; `opponent` gives head-to-head (last N *meetings*). Raw-stat archive, so it includes games no book priced |
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual (optional `dfs_odds_type` to scope to a PrizePicks flavor) |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines |
 | `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
@@ -51,7 +52,7 @@ The model uses these tools transparently:
 
 ## Hosted endpoint (no install)
 
-The same 24 tools are served over **Streamable HTTP** at
+The same 25 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp
@@ -114,7 +115,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. The hammer icon should show 21 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
+Restart Claude Desktop. The hammer icon should show 25 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
 
 #### Claude Code
 
