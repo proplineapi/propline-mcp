@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.27.0";
+export const VERSION = "0.28.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -218,7 +218,13 @@ export const tools: ToolDef[] = [
       "pregame (late scratch, dropped market type) — its outcomes are then " +
       "the last quoted legs, not a live price. Treat a suspended market " +
       "as unbettable and, if several books show it for one player, as a " +
-      "probable scratch.",
+      "probable scratch. Each market also carries team: the canonical " +
+      "event team name when the market is scoped to ONE team (a TEAM " +
+      "total), and null for the game total. Both ride the totals key, so " +
+      "NEVER compare totals on (market key, point) alone — a team total " +
+      "at 0.5 is not a game total at 0.5. Filter team == null for the " +
+      "game total; team matches home_team/away_team exactly. Always null " +
+      "outside totals.",
     inputSchema: {
       type: "object",
       properties: {
