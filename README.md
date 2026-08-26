@@ -93,7 +93,7 @@ Your agent can immediately pull live odds, scores, and stats. The demo key is fr
 
 ### 1. Get a PropLine API key
 
-[prop-line.com](https://prop-line.com/?ref=mcp) — free tier is 1,000 requests/day, no credit card. Pro at $19/mo unlocks resolution, history, and +EV.
+[prop-line.com](https://prop-line.com/?ref=mcp) — free tier is 1,000 requests/day, no credit card. Hobby at $9/mo unlocks resolution, history, closing lines and +EV — Pro at $19/mo is that same feature set at 25,000 requests/day.
 
 ### 2. Add to your MCP client
 
@@ -144,7 +144,7 @@ PropLine is API-compatible at the response level (same `bookmakers[].markets[].o
 2. **Cross-book +EV** — Pinnacle-anchored no-vig fair lines per book, sorted with +EV plays at the top
 3. **Webhooks** — push delivery on Streaming tier, not pull-only
 
-Pricing: free at 1,000 req/day (vs their 500/month), Pro at $19/mo for 25,000 req/day, Streaming at $79/mo for 1,000,000 req/day. No credit math.
+Pricing: free at 1,000 req/day (vs their 500/month), Hobby at $9/mo for 5,000 req/day, Pro at $19/mo for 25,000, Streaming at $79/mo for 1,000,000. No credit math.
 
 ## Links
 
