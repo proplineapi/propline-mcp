@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.29.0";
+export const VERSION = "0.30.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1036,6 +1036,41 @@ export const tools: ToolDef[] = [
       // the tool claimed to have filtered.
       return filterByMinEv(res, args.min_ev_pct as number | undefined);
     },
+  },
+  {
+    name: "propline_get_event_projections",
+    title: "Get market-implied projections",
+    description:
+      "Market-implied consensus projection per (market, player) for an " +
+      "event: the line where the no-vig P(over) crosses 50%, median " +
+      "across contributing sportsbooks. Use it to validate statistical " +
+      "or fantasy projections against the live market. These are " +
+      "MARKET-IMPLIED values derived purely from sportsbook prices — " +
+      "never a forecast, and no accuracy claim is made; present them as " +
+      "'the market implies X', not 'PropLine projects X'. DFS pick'em " +
+      "pricing is excluded; each row carries books_contributing and a " +
+      "stable player_id (null until the player has graded). Hobby+ for " +
+      "values; free tier gets the structure redacted.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        event_id: { type: ["string", "number"] },
+        markets: {
+          type: "string",
+          description:
+            "Comma-separated market keys, e.g. 'player_pass_yds,player_receptions'.",
+        },
+      },
+      required: ["sport_key", "event_id"],
+      additionalProperties: false,
+    },
+    handler: async (args) =>
+      client().getEventProjections(
+        args.sport_key as string,
+        args.event_id as string | number,
+        { markets: args.markets as string | undefined },
+      ),
   },
   {
     name: "propline_get_best_line",

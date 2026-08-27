@@ -351,6 +351,17 @@ export class PropLineClient {
     });
   }
 
+  getEventProjections(
+    sportKey: string,
+    eventId: string | number,
+    opts: { markets?: string } = {},
+  ): Promise<unknown> {
+    return this.request(
+      `/v1/sports/${sportKey}/events/${eventId}/projections`,
+      { markets: opts.markets },
+    );
+  }
+
   getEventBestLine(
     sportKey: string,
     eventId: string | number,
