@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.33.0";
+export const VERSION = "0.34.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1248,6 +1248,55 @@ export const tools: ToolDef[] = [
       client().listWebhookDeliveries(args.webhook_id as number, {
         limit: args.limit as number | undefined,
         beforeId: args.before_id as number | undefined,
+      }),
+  },
+  {
+    name: "propline_replay_webhook_events",
+    title: "Replay missed webhook events",
+    description:
+      "Re-read a webhook subscription's events in order from a cursor — " +
+      "answers 'my endpoint was down, what did I miss?'. Every delivery " +
+      "carries an X-PropLine-Sequence header, a counter monotonic WITHIN " +
+      "one subscription; pass the highest one the user processed as " +
+      "since_seq. Do NOT use the delivery id as the cursor: that id is " +
+      "global across all subscriptions, so gaps in it are other customers' " +
+      "traffic and mean nothing. Events come back OLDEST FIRST (the " +
+      "opposite of propline_get_webhook_deliveries, which is a newest-first " +
+      "debugging log). Page by passing next_seq back as since_seq while " +
+      "has_more is true. ALWAYS check `truncated`: true means events after " +
+      "the cursor already aged out of retention (2 days, max 5,000 " +
+      "deliveries per subscription) and are unrecoverable — tell the user " +
+      "to resync from the REST endpoints rather than reporting them caught " +
+      "up. latest_seq is not subject to retention, so latest_seq - next_seq " +
+      "is an honest 'how far behind' even when the rows are gone. Sequence " +
+      "numbers always increase and never repeat but are NOT guaranteed to " +
+      "be dense — a skipped number is normal and is not evidence of loss.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        webhook_id: {
+          type: "number",
+          description: "Webhook id (from propline_list_webhooks).",
+        },
+        since_seq: {
+          type: "number",
+          description:
+            "Read events after this sequence. Default 0 = from the oldest " +
+            "retained event (which on an established subscription will " +
+            "correctly report truncated: true).",
+        },
+        limit: {
+          type: "number",
+          description: "Events per page, 1-500. Default 100.",
+        },
+      },
+      required: ["webhook_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().replayWebhookEvents(args.webhook_id as number, {
+        sinceSeq: args.since_seq as number | undefined,
+        limit: args.limit as number | undefined,
       }),
   },
 ];

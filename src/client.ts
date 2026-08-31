@@ -394,4 +394,14 @@ export class PropLineClient {
       before_id: opts.beforeId,
     });
   }
+
+  replayWebhookEvents(
+    webhookId: string | number,
+    opts: { sinceSeq?: number; limit?: number } = {},
+  ): Promise<unknown> {
+    return this.request(`/v1/webhooks/${webhookId}/replay`, {
+      since_seq: opts.sinceSeq,
+      limit: opts.limit,
+    });
+  }
 }

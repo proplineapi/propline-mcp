@@ -53,7 +53,7 @@ The model uses these tools transparently:
 
 ## Hosted endpoint (no install)
 
-The same 26 tools are served over **Streamable HTTP** at
+The same 27 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp
@@ -118,7 +118,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. The hammer icon should show 26 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
+Restart Claude Desktop. The hammer icon should show 27 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
 
 #### Claude Code
 
