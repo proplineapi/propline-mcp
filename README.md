@@ -90,6 +90,8 @@ npx -y propline-mcp
 
 Your agent can immediately pull live odds, scores, and stats. The demo key is free-tier and shared — paid features (resolution, +EV, history, exports) return a redacted teaser, and limits are pooled across everyone. For full access and your own limits, set `PROPLINE_API_KEY` (below). Get a free personal key at [prop-line.com](https://prop-line.com/?ref=mcp).
 
+While the demo key is in use, every tool result carries a second content block noting the pooling and redaction, so the assistant can explain an empty field or a 429 accurately. It disappears the moment you set your own key.
+
 ## Install (with your own key)
 
 ### 1. Get a PropLine API key

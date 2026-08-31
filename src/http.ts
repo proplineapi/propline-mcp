@@ -90,7 +90,7 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse) {
   });
   if (demo) res.setHeader("X-PropLine-Demo-Key", "1");
   await server.connect(transport);
-  await withClient(client, () => transport.handleRequest(req, res));
+  await withClient(client, demo, () => transport.handleRequest(req, res));
 }
 
 const manifest = () => ({

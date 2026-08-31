@@ -1,6 +1,6 @@
 {
   "name": "propline-mcp",
-  "version": "0.32.0",
+  "version": "0.33.0",
   "mcpName": "io.github.proplineapi/propline-mcp",
   "description": "Model Context Protocol server for the PropLine player props betting odds API. Exposes live odds, prop resolution, cross-book +EV, scores, and box-score stats as tool calls for Claude Desktop, Claude Code, and any MCP-compatible client.",
   "keywords": [
