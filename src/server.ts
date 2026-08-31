@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.31.0";
+export const VERSION = "0.32.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -205,10 +205,13 @@ export const tools: ToolDef[] = [
       "the whole sport. Pass markets as a comma-separated list (e.g. " +
       "'h2h,spreads,totals' or 'player_points,player_rebounds'). " +
       "Response includes a bookmakers[] array across every book that " +
-      "carries the requested markets (currently up to 13: Bovada, " +
+      "carries the requested markets (currently up to 27: Bovada, " +
       "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
-      "Underdog, PrizePicks, Kalshi, Polymarket, Matchbook, Smarkets " +
-      "— coverage varies by sport). Underdog Fantasy outcomes carry a " +
+      "BetUS, BetOnline.ag, LowVig.ag, MyBookie.ag, Fanatics, " +
+      "Marathon Bet, 1xBet, TAB, Underdog Fantasy, PrizePicks, " +
+      "Sleeper, Dabble, Betr Picks, ReBet, Kalshi, Polymarket, " +
+      "Matchbook, Smarkets, Novig, ProphetX — coverage varies by " +
+      "sport). Underdog Fantasy outcomes carry a " +
       "payout_multiplier on EVERY outcome (1.0 = standard pick, e.g. " +
       "1.5 = boost, 0.75 = discount; null means the book is not " +
       "Underdog) — keep only payout_multiplier == 1.0 when comparing " +
@@ -248,7 +251,7 @@ export const tools: ToolDef[] = [
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, underdog, prizepicks, kalshi, polymarket, matchbook, smarkets). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betus, betonlineag, lowvig, mybookieag, fanatics, marathon, onexbet, tab_au, underdog, prizepicks, sleeper, dabble, betr, rebet, kalshi, polymarket, matchbook, smarkets, novig, prophetx). Default returns all available.",
         },
         period: {
           type: "string",
@@ -559,7 +562,8 @@ export const tools: ToolDef[] = [
       "Free-tier endpoint. Returns season-long futures (outright) markets " +
       "for a sport — championship/Super Bowl/division/conference winners, " +
       "MVP and award winners, season win totals — aggregated across " +
-      "Bovada, FanDuel, DraftKings, and Pinnacle. One row per (futures " +
+      "Bovada, FanDuel, DraftKings, Pinnacle, and Kalshi. One row per " +
+      "(futures " +
       "event, book, market) with each team/player outcome and its price. " +
       "Marquee markets (Super Bowl winner, MVP, division/conference) are " +
       "quoted by multiple books for comparison; exotic markets are often " +
@@ -808,7 +812,7 @@ export const tools: ToolDef[] = [
       "Per (book, market, outcome): opening line, latest line, signed " +
       "implied-probability shift, point shift, direction. The steam[] " +
       "array flags outcomes that multiple books moved the same direction — " +
-      "the classic sharp-money signal, computed across all 16 books " +
+      "the classic sharp-money signal, computed across all 27 books " +
       "PropLine polls. When a book moves the line itself, that outcome's " +
       "prob_shift is null and direction is 'line_moved' (excluded from the " +
       "steam signal). No pull-only odds API can produce this. Hobby+ full; " +
@@ -1002,7 +1006,8 @@ export const tools: ToolDef[] = [
       "are sorted with +EV plays floated to the top of each line group. " +
       "PrizePicks is excluded from EV math (DFS payouts aren't " +
       "comparable to per-book prices). The anchor is chosen PER LINE in " +
-      "the order pinnacle → polymarket → kalshi → bovada, and each " +
+      "the order pinnacle → polymarket → kalshi → bovada → smarkets, " +
+      "and each " +
       "line's fair_source names the one used — report the anchor from " +
       "fair_source per line, never assume Pinnacle anchored all of them. " +
       "Optional bookmakers filter prices to the books the user holds " +

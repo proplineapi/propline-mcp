@@ -2,13 +2,13 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.proplineapi/propline-mcp",
   "title": "PropLine \u2014 Sports Betting Odds & Prop Resolution",
-  "description": "Live odds, cross-book +EV and graded player-prop results across 25 books. Hosted endpoint included.",
+  "description": "Live odds, cross-book +EV and graded player-prop results across 27 books. Hosted endpoint included.",
   "websiteUrl": "https://prop-line.com",
   "repository": {
     "url": "https://github.com/proplineapi/propline-mcp",
     "source": "github"
   },
-  "version": "0.31.0",
+  "version": "0.32.0",
   "remotes": [
     {
       "type": "streamable-http",
@@ -28,7 +28,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "propline-mcp",
-      "version": "0.31.0",
+      "version": "0.32.0",
       "transport": {
         "type": "stdio"
       },
