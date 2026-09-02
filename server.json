@@ -8,7 +8,7 @@
     "url": "https://github.com/proplineapi/propline-mcp",
     "source": "github"
   },
-  "version": "0.35.0",
+  "version": "0.35.1",
   "remotes": [
     {
       "type": "streamable-http",
@@ -28,7 +28,7 @@
       "registryType": "npm",
       "registryBaseUrl": "https://registry.npmjs.org",
       "identifier": "propline-mcp",
-      "version": "0.35.0",
+      "version": "0.35.1",
       "transport": {
         "type": "stdio"
       },
