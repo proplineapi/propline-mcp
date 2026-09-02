@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.34.0";
+export const VERSION = "0.35.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -553,6 +553,69 @@ export const tools: ToolDef[] = [
     },
     handler: (args) =>
       client().gradeClv(args.bets as unknown[]),
+  },
+  {
+    name: "propline_price_sgp",
+    title: "Price a same-game parlay at the book's own odds",
+    description:
+      "Hobby+ endpoint. Prices a same-game parlay at the BOOK'S OWN " +
+      "correlated odds — the price a FanDuel customer would be offered for " +
+      "that exact slip right now, not a model of it. FanDuel is the only " +
+      "book today (bookmaker defaults to fanduel). Send 2-10 legs from ONE " +
+      "event, each named exactly as propline_get_odds names an outcome: " +
+      "market key, name (team / Over / Under / player for YES-only props), " +
+      "description (the player on a two-way prop, '' for game lines), point " +
+      "(omit for h2h and YES-only props) and period (omit for full game) — " +
+      "or book_outcome_id from includeBookIds. The response carries " +
+      "sgp_price (the book's parlay price), independent_price (the product " +
+      "of the live single-leg prices) and correlation_factor = their ratio: " +
+      "below 1 the book is charging for correlation, above 1 it is paying " +
+      "for anti-correlation — say which when presenting it. Matching is " +
+      "fail-closed: a leg that does not pin to exactly one stored outcome " +
+      "is a 422 leg_unmatched naming the leg (an Over with no point on an " +
+      "event with two total lines is refused, not guessed) — fix the leg, " +
+      "do not retry blindly. quoted=false means the book will not offer " +
+      "that combination as an SGP; refused legs carry the book's own " +
+      "failure_code. Free tier returns the matched legs with every price " +
+      "nulled.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "e.g. baseball_mlb" },
+        event_id: { type: ["string", "number"] },
+        bookmaker: {
+          type: "string",
+          description: "Book to price at. Only fanduel today.",
+        },
+        legs: {
+          type: "array",
+          minItems: 2,
+          maxItems: 10,
+          description: "Legs named exactly as /odds names an outcome.",
+          items: {
+            type: "object",
+            properties: {
+              market: { type: "string" },
+              name: { type: "string" },
+              description: { type: "string" },
+              point: { type: ["number", "null"] },
+              period: { type: ["string", "null"] },
+              book_outcome_id: { type: ["string", "null"] },
+            },
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["sport_key", "event_id", "legs"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().priceSgp(
+        args.sport_key as string,
+        args.event_id as string | number,
+        args.legs as unknown[],
+        (args.bookmaker as string | undefined) ?? "fanduel",
+      ),
   },
   {
     name: "propline_export_odds_history",

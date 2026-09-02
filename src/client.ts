@@ -206,6 +206,22 @@ export class PropLineClient {
     return this.postRequest("/v1/clv/grade", bets);
   }
 
+  /**
+   * Price a same-game parlay at the book's own correlated odds (FanDuel
+   * today). Hobby+. See the propline_price_sgp tool description.
+   */
+  priceSgp(
+    sportKey: string,
+    eventId: string | number,
+    legs: unknown[],
+    bookmaker = "fanduel",
+  ): Promise<unknown> {
+    return this.postRequest(
+      `/v1/sports/${encodeURIComponent(sportKey)}/events/${encodeURIComponent(String(eventId))}/sgp`,
+      { bookmaker, legs },
+    );
+  }
+
   // ----- Bulk exports -----
 
   /**
