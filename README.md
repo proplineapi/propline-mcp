@@ -148,7 +148,7 @@ PropLine is API-compatible at the response level (same `bookmakers[].markets[].o
 2. **Cross-book +EV** — Pinnacle-anchored no-vig fair lines per book, sorted with +EV plays at the top
 3. **Webhooks** — push delivery on Streaming tier, not pull-only
 
-Pricing: free at 1,000 req/day (vs their 500/month), Hobby at $9/mo for 5,000 req/day, Pro at $19/mo for 25,000, Streaming at $79/mo for 1,000,000. No credit math.
+Pricing: free at 1,000 req/day (vs their 500/month), Hobby at $9/mo for 5,000 req/day, Pro at $19/mo for 25,000, Streaming Lite at $39/mo for 250,000 (webhooks + websocket), Streaming at $79/mo for 1,000,000. No credit math.
 
 ## Links
 
