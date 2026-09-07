@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.35.1";
+export const VERSION = "0.35.2";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -566,8 +566,11 @@ export const tools: ToolDef[] = [
       "event, each named exactly as propline_get_odds names an outcome: " +
       "market key, name (team / Over / Under / player for YES-only props), " +
       "description (the player on a two-way prop, '' for game lines), point " +
-      "(omit for h2h and YES-only props) and period (omit for full game) — " +
-      "or book_outcome_id from includeBookIds. The response carries " +
+      "(omit for h2h and YES-only props), period (omit for full game) and " +
+      "team for a TEAM total (omit for the game total; a totals leg with " +
+      "no team matches the game total only) — or book_outcome_id from " +
+      "includeBookIds (on betonlineag / lowvig that is Sportcast's " +
+      "settlement id, e.g. MatchWinner_Home). The response carries " +
       "sgp_price (the book's parlay price), independent_price (the product " +
       "of the live single-leg prices) and correlation_factor = their ratio: " +
       "below 1 the book is charging for correlation, above 1 it is paying " +
@@ -601,6 +604,12 @@ export const tools: ToolDef[] = [
               description: { type: "string" },
               point: { type: ["number", "null"] },
               period: { type: ["string", "null"] },
+              team: {
+                type: ["string", "null"],
+                description:
+                  "For a TEAM total: the team as /odds serves it in the " +
+                  "market's team field. Omit for the game total.",
+              },
               book_outcome_id: { type: ["string", "null"] },
             },
             additionalProperties: false,
