@@ -5,7 +5,7 @@
 
 Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.proplineapi/propline-mcp` — discoverable from Claude Code, Claude Desktop, and any MCP-aware client.
 
-**Model Context Protocol server** for the [PropLine](https://prop-line.com/?ref=mcp) player props betting odds API. Plug it into Claude Desktop, Claude Code, or any MCP-compatible client and ask natural-language questions about live odds, prop resolution, cross-book +EV, scores, and box-score stats — the model picks the right tool, calls the API, and answers from real data.
+**Model Context Protocol server** for the [PropLine](https://prop-line.com/?ref=mcp) [player props betting odds API](https://prop-line.com/player-props-api?ref=mcp). Plug it into Claude Desktop, Claude Code, or any MCP-compatible client and ask natural-language questions about live odds, prop resolution, cross-book +EV, scores, and box-score stats — the model picks the right tool, calls the API, and answers from real data.
 
 > No more "I'd need an API for that" deflections from your AI assistant. PropLine MCP turns sports-betting research into a chat.
 
@@ -155,6 +155,7 @@ Pricing: free at 1,000 req/day (vs their 500/month), Hobby at $9/mo for 5,000 re
 - **Hosted MCP endpoint**: `https://mcp.prop-line.com/mcp` (Streamable HTTP)
 - **Privacy policy**: [prop-line.com/privacy](https://prop-line.com/privacy)
 - **Website**: [prop-line.com](https://prop-line.com/?ref=mcp)
+- **Player props API** (markets, books, sports covered): [prop-line.com/player-props-api](https://prop-line.com/player-props-api?ref=mcp)
 - **API Docs**: [prop-line.com/docs](https://prop-line.com/docs?ref=mcp)
 - **Recipes** (code for common jobs): [prop-line.com/recipes](https://prop-line.com/recipes?ref=mcp)
 - **Odds API by sport and market** (live line, books, graded hit rate): [prop-line.com/odds-api](https://prop-line.com/odds-api?ref=mcp)
