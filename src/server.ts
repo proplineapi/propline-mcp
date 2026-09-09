@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.35.4";
+export const VERSION = "0.35.5";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -561,8 +561,13 @@ export const tools: ToolDef[] = [
       "Hobby+ endpoint. Prices a same-game parlay at the BOOK'S OWN " +
       "correlated odds — the price a FanDuel customer would be offered for " +
       "that exact slip right now, not a model of it. bookmaker is fanduel " +
-      "(default, its own pricer) or betonlineag / lowvig (the Sportcast " +
-      "engine both share, same builder price). Send 2-10 legs from ONE " +
+      "(default, its own pricer), draftkings (its SGP widget's pricer), " +
+      "betonlineag / lowvig (the Sportcast " +
+      "engine both share, same builder price), or 'all' to quote every " +
+      "book on the same legs in one call — then the response is {quotes, " +
+      "errors, best_bookmaker}, and best_bookmaker is the book charging " +
+      "the smallest correlation reduction (use 'all' whenever the user " +
+      "asks which book to bet an SGP at). Send 2-10 legs from ONE " +
       "event, each named exactly as propline_get_odds names an outcome: " +
       "market key, name (team / Over / Under / player for YES-only props), " +
       "description (the player on a two-way prop, '' for game lines), point " +
@@ -589,7 +594,7 @@ export const tools: ToolDef[] = [
         event_id: { type: ["string", "number"] },
         bookmaker: {
           type: "string",
-          description: "fanduel (default), betonlineag or lowvig.",
+          description: "fanduel (default), draftkings, betonlineag, lowvig, or all (every book side by side).",
         },
         legs: {
           type: "array",
