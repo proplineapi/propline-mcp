@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.35.5";
+export const VERSION = "0.36.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1162,6 +1162,18 @@ export const tools: ToolDef[] = [
           type: "number",
           description: "Filter to outcomes with EV ≥ this percent (e.g. 2.0).",
         },
+        devig: {
+          type: "string",
+          enum: ["multiplicative", "shin"],
+          description:
+            "How the anchor's vig is removed. 'multiplicative' (default) " +
+            "divides each implied probability by the booksum; 'shin' " +
+            "solves Shin's insider-trading model, which loads the " +
+            "overround onto the longshot and corrects the " +
+            "favourite-longshot bias — use it when the user asks about " +
+            "longshot props (anytime TD, first scorer). The response " +
+            "echoes devig_method; say which method the numbers came from.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -1173,6 +1185,7 @@ export const tools: ToolDef[] = [
         {
           markets: args.markets as string | undefined,
           bookmakers: args.bookmakers as string | undefined,
+          devig: args.devig as "multiplicative" | "shin" | undefined,
         },
       );
       // min_ev_pct is applied HERE, client-side. It used to be forwarded

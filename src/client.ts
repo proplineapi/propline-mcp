@@ -355,7 +355,7 @@ export class PropLineClient {
   getEventEv(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string; bookmakers?: string } = {},
+    opts: { markets?: string; bookmakers?: string; devig?: string } = {},
   ): Promise<unknown> {
     // NB: no min_ev_pct here. This client used to send one, but /ev has
     // never accepted that parameter — FastAPI drops unknown query params,
@@ -364,6 +364,7 @@ export class PropLineClient {
     return this.request(`/v1/sports/${sportKey}/events/${eventId}/ev`, {
       markets: opts.markets,
       bookmakers: opts.bookmakers,
+      devig: opts.devig,
     });
   }
 
