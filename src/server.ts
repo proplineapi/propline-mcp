@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.36.0";
+export const VERSION = "0.37.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -547,12 +547,21 @@ export const tools: ToolDef[] = [
             additionalProperties: false,
           },
         },
+        devig: {
+          type: "string",
+          enum: ["multiplicative", "shin"],
+          description:
+            "How the closing anchor's vig is removed before " +
+            "closing_fair_prob / ev_vs_close_pct. 'multiplicative' (default) " +
+            "or 'shin' (loads the overround onto the longshot). Same " +
+            "vocabulary as propline_get_event_ev; echoed as devig_method.",
+        },
       },
       required: ["bets"],
       additionalProperties: false,
     },
     handler: (args) =>
-      client().gradeClv(args.bets as unknown[]),
+      client().gradeClv(args.bets as unknown[], args.devig as string | undefined),
   },
   {
     name: "propline_price_sgp",

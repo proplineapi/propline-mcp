@@ -202,8 +202,9 @@ export class PropLineClient {
    * See the propline_grade_clv tool description for the semantics that
    * matter when presenting the result.
    */
-  gradeClv(bets: unknown[]): Promise<unknown> {
-    return this.postRequest("/v1/clv/grade", bets);
+  gradeClv(bets: unknown[], devig?: string): Promise<unknown> {
+    const qs = devig ? `?devig=${encodeURIComponent(devig)}` : "";
+    return this.postRequest(`/v1/clv/grade${qs}`, bets);
   }
 
   /**
