@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - "v*"
+  # Re-run a release whose npm half already landed (e.g. the registry step
+  # raced npm propagation). The npm step skips an already-visible version.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to (re)publish, e.g. 0.38.0 — must match package.json"
+        required: true
 
 jobs:
   publish:
@@ -26,8 +33,10 @@ jobs:
       - run: npm install -g npm@latest
 
       - name: Verify tag matches package version
+        env:
+          REQUESTED_VERSION: ${{ inputs.version || github.ref_name }}
         run: |
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_VERSION="${REQUESTED_VERSION#v}"
           PKG_VERSION=$(node -p "require('./package.json').version")
           INDEX_VERSION=$(grep -E '^export const VERSION = ' src/server.ts | sed -E 's/.*"(.*)".*/\1/')
           SERVER_VERSION=$(node -p "require('./server.json').version")
@@ -62,7 +71,32 @@ jobs:
       # the Trusted Publisher config registered for this package on
       # npmjs.com (Repository: proplineapi/propline-mcp, Workflow:
       # publish.yml). Requires the `id-token: write` permission above.
-      - run: npm publish --access public --provenance
+      #
+      # Idempotent: a version already on npm is skipped, and E409 "previously
+      # staged version" means npm ACCEPTED an earlier attempt that is still
+      # propagating — not a failure.
+      - name: npm publish
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          if [ "$(npm view propline-mcp@$VERSION version 2>/dev/null)" = "$VERSION" ]; then
+            echo "propline-mcp@$VERSION already on npm — skipping"; exit 0
+          fi
+          set -o pipefail
+          if ! npm publish --access public --provenance 2>&1 | tee publish.log; then
+            grep -q "previously staged version" publish.log && { echo "already staged — ok"; exit 0; }
+            exit 1
+          fi
+
+      # The registry validates the npm version exists, and a fresh publish
+      # is invisible on npm's read path for a minute or more. Wait for it.
+      - name: Wait for npm to serve the version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          for i in $(seq 1 40); do
+            [ "$(npm view propline-mcp@$VERSION version 2>/dev/null)" = "$VERSION" ] && exit 0
+            sleep 15
+          done
+          echo "::error::propline-mcp@$VERSION not visible on npm after 10 min"; exit 1
 
       # --- Publish server metadata to the official MCP Registry ---
       # registry.modelcontextprotocol.io is what MCP clients (Claude Code,
