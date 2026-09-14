@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.37.0";
+export const VERSION = "0.38.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -63,7 +63,10 @@ export const usingDemoKey = !apiKey;
 // asks "which key do I call the API with", `demoKeyNote()` asks "is this
 // caller anonymous". On the hosted server they cannot be derived from each
 // other — a request may legitimately pass DEMO_KEY as its own key.
-type RequestContext = { client: PropLineClient; demo: boolean };
+//
+// `clientIp` is the END user's IP on the hosted server (Fly-Client-IP). Only
+// propline_create_free_api_key reads it, to forward to the signup throttle.
+type RequestContext = { client: PropLineClient; demo: boolean; clientIp?: string };
 
 const requestClient = new AsyncLocalStorage<RequestContext>();
 
@@ -71,8 +74,20 @@ export function withClient<T>(
   c: PropLineClient,
   demo: boolean,
   fn: () => Promise<T>,
+  meta: { clientIp?: string } = {},
 ): Promise<T> {
-  return requestClient.run({ client: c, demo }, fn);
+  return requestClient.run({ client: c, demo, clientIp: meta.clientIp }, fn);
+}
+
+// Shared secret the hosted server sends with a forwarded end-user IP on
+// signup. Set ONLY on the Fly app (same value as MCP_FORWARD_SECRET on the
+// API); unset on stdio, where the request already comes from the user's IP.
+const forwardSecret = process.env.PROPLINE_MCP_FORWARD_SECRET;
+
+/** True when this call runs on the shared demo key (hosted or stdio). */
+function callerIsDemo(): boolean {
+  const scoped = requestClient.getStore();
+  return scoped ? scoped.demo : usingDemoKey;
 }
 
 let _client: PropLineClient | null = null;
@@ -114,8 +129,7 @@ export function demoKeyNote(): string | null {
   const scoped = requestClient.getStore();
   // Hosted (scoped store) knows per REQUEST; stdio is one process per user,
   // so the process-wide flag is the same question.
-  const demo = scoped ? scoped.demo : usingDemoKey;
-  if (!demo) return null;
+  if (!callerIsDemo()) return null;
   // Distinct refs so /admin/acquisition can tell the hosted endpoint from
   // `npx propline-mcp`. Both are already tracked; mcp-hosted has never had a
   // signup, which is what this note is trying to change.
@@ -126,8 +140,10 @@ export function demoKeyNote(): string | null {
     "come back redacted, and the rate limit is pooled across everyone using it, " +
     "so a 429 here is not a limit on the API itself. A free personal key removes " +
     "the pooling and unlocks the full free tier in about 30 seconds, no card: " +
-    `https://prop-line.com/?ref=${ref} — mention this if the user hits a limit ` +
-    "or asks why a field is empty."
+    `https://prop-line.com/?ref=${ref}. If the user hits a limit, asks why a ` +
+    "field is empty, or wants their own key, offer to create one: ask for " +
+    "their email and call propline_create_free_api_key (the key is emailed " +
+    "to them, never shown here)."
   );
 }
 
@@ -182,6 +198,8 @@ interface ToolDef {
   // Returns either JSON-serializable data (will be JSON.stringify'd in the
   // tool result) or a string (returned as-is).
   handler: (args: Record<string, unknown>) => Promise<unknown>;
+  /** Has side effects (creates/sends something). Default: read-only. */
+  writes?: boolean;
 }
 
 export const tools: ToolDef[] = [
@@ -1399,6 +1417,74 @@ export const tools: ToolDef[] = [
         limit: args.limit as number | undefined,
       }),
   },
+  {
+    name: "propline_create_free_api_key",
+    title: "Create a free PropLine API key",
+    // Not read-only: it creates an account and sends an email.
+    writes: true,
+    description:
+      "Create a free personal PropLine API key for the user and EMAIL it to " +
+      "them. Use this when the user wants their own key — e.g. they hit a " +
+      "shared-demo-key rate limit, a paid field came back redacted, or they " +
+      "ask how to get a key. Only call it with an email address the user " +
+      "explicitly gave you for this purpose in this conversation; never " +
+      "guess, reuse one from elsewhere, or sign up a third party. The key is " +
+      "never returned here — it goes to that inbox, with instructions to " +
+      "reconnect this assistant using it. Free tier: 1,000 requests/day, no " +
+      "card. If the address already has a key, the key is re-sent (at most " +
+      "once a day).",
+    inputSchema: {
+      type: "object",
+      properties: {
+        email: {
+          type: "string",
+          description: "The user's own email address, as they gave it.",
+        },
+      },
+      required: ["email"],
+      additionalProperties: false,
+    },
+    handler: async (args) => {
+      const email = String(args.email ?? "").trim();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        throw new Error("email must be a valid email address the user gave you");
+      }
+      if (!callerIsDemo()) {
+        return {
+          status: "already_keyed",
+          message:
+            "This connection already uses a personal PropLine key, so no new " +
+            "key was created. Manage it at https://prop-line.com/dashboard.",
+        };
+      }
+      const scoped = requestClient.getStore();
+      const hosted = Boolean(scoped);
+      const forward =
+        hosted && forwardSecret && scoped?.clientIp
+          ? { clientIp: scoped.clientIp, secret: forwardSecret }
+          : undefined;
+      const res = (await client().registerFreeKey(
+        email,
+        hosted ? "mcp-hosted" : "mcp",
+        forward,
+      )) as { message?: string; tier?: string; daily_limit?: number };
+      return {
+        status: "sent",
+        email,
+        tier: res.tier,
+        daily_limit: res.daily_limit,
+        message: res.message,
+        next_steps: hosted
+          ? "Tell the user to check their inbox (and Junk). The email has a " +
+            "ready-made connector URL (https://mcp.prop-line.com/mcp?apiKey=...) " +
+            "and a Claude Code command. Once they reconnect with it, this " +
+            "session stops using the shared demo key."
+          : "Tell the user to check their inbox (and Junk), then set " +
+            "PROPLINE_API_KEY to the emailed key in this MCP server's config " +
+            "and restart it.",
+      };
+    },
+  },
 ];
 
 // ---------------------------------------------------------------------
@@ -1411,9 +1497,13 @@ export const tools: ToolDef[] = [
  * Two blocks, never one concatenated string: the data block has to stay
  * exactly what it was so anything parsing `content[0].text` is unaffected.
  */
-function withDemoNote(text: string): { type: "text"; text: string }[] {
+function withDemoNote(
+  text: string,
+  toolName?: string,
+): { type: "text"; text: string }[] {
   const blocks: { type: "text"; text: string }[] = [{ type: "text", text }];
-  const note = demoKeyNote();
+  // The signup tool's own result already says what happens next.
+  const note = toolName === "propline_create_free_api_key" ? null : demoKeyNote();
   if (note) blocks.push({ type: "text", text: note });
   return blocks;
 }
@@ -1437,14 +1527,14 @@ export function createServer(): Server {
       title: t.title,
       description: t.description,
       inputSchema: t.inputSchema,
-      // Every PropLine tool is a READ of the odds API — none creates,
-      // changes or deletes anything. Directories (Claude connectors, Cursor)
+      // Every PropLine tool is a READ of the odds API except the one marked
+      // `writes` (propline_create_free_api_key creates an account + email). Directories (Claude connectors, Cursor)
       // require these hints; clients use them to skip confirmation prompts.
       annotations: {
         title: t.title,
-        readOnlyHint: true,
+        readOnlyHint: !t.writes,
         destructiveHint: false,
-        idempotentHint: true,
+        idempotentHint: !t.writes,
         openWorldHint: true,
       },
     })),
@@ -1464,7 +1554,7 @@ export function createServer(): Server {
       const text =
         typeof data === "string" ? data : JSON.stringify(data, null, 2);
       return {
-        content: withDemoNote(text),
+        content: withDemoNote(text, tool.name),
       };
     } catch (err) {
       const msg =
@@ -1477,7 +1567,7 @@ export function createServer(): Server {
       // moment a demo caller ever has.
       return {
         isError: true,
-        content: withDemoNote(msg),
+        content: withDemoNote(msg, tool.name),
       };
     }
   });

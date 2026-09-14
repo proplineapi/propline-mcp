@@ -51,10 +51,11 @@ The model uses these tools transparently:
 | `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
 | `propline_list_webhooks` | Streaming Lite+: list webhook subscriptions (read-only, secrets masked) |
 | `propline_get_webhook_deliveries` | Streaming Lite+: recent delivery attempts for a webhook — status, HTTP code, attempts, payload; `before_id` pages backwards. The "why isn't my webhook firing" tool |
+| `propline_create_free_api_key` | Sign the user up for a free personal key from inside the chat. Takes the email **the user gives**; the key is emailed to them (never returned), with a ready-made connector URL to reconnect. The only tool that is not read-only |
 
 ## Hosted endpoint (no install)
 
-The same 27 tools are served over **Streamable HTTP** at
+The same 29 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp
@@ -91,7 +92,7 @@ npx -y propline-mcp
 
 Your agent can immediately pull live odds, scores, and stats. The demo key is free-tier and shared — paid features (resolution, +EV, history, exports) return a redacted teaser, and limits are pooled across everyone. For full access and your own limits, set `PROPLINE_API_KEY` (below). Get a free personal key at [prop-line.com](https://prop-line.com/?ref=mcp).
 
-While the demo key is in use, every tool result carries a second content block noting the pooling and redaction, so the assistant can explain an empty field or a 429 accurately. It disappears the moment you set your own key.
+While the demo key is in use, every tool result carries a second content block noting the pooling and redaction, so the assistant can explain an empty field or a 429 accurately. It disappears the moment you set your own key. The note also tells the assistant it can offer `propline_create_free_api_key`, so a user can get their own key without leaving the chat.
 
 ## Install (with your own key)
 

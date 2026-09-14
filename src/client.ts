@@ -80,6 +80,7 @@ export class PropLineClient {
   private async postRequest<T = unknown>(
     path: string,
     body: unknown,
+    extraHeaders: Record<string, string> = {},
   ): Promise<T> {
     const url = new URL(this.baseUrl + path);
     const controller = new AbortController();
@@ -92,6 +93,7 @@ export class PropLineClient {
           Accept: "application/json",
           "Content-Type": "application/json",
           "User-Agent": "propline-mcp/0.1.0",
+          ...extraHeaders,
         },
         body: JSON.stringify(body),
         signal: controller.signal,
@@ -221,6 +223,27 @@ export class PropLineClient {
       `/v1/sports/${encodeURIComponent(sportKey)}/events/${encodeURIComponent(String(eventId))}/sgp`,
       { bookmaker, legs },
     );
+  }
+
+  /**
+   * Register a free PropLine key for an email (POST /v1/auth/register).
+   * The key is EMAILED to that address and never returned — the response
+   * is only a status message. `forward` carries the end user's IP plus the
+   * shared secret on the hosted server, so the API's per-IP signup throttle
+   * counts that user rather than the MCP machine.
+   */
+  registerFreeKey(
+    email: string,
+    source: string,
+    forward?: { clientIp: string; secret: string },
+  ): Promise<unknown> {
+    const headers: Record<string, string> = forward
+      ? {
+          "X-PropLine-Forward-Secret": forward.secret,
+          "X-PropLine-Client-IP": forward.clientIp,
+        }
+      : {};
+    return this.postRequest("/v1/auth/register", { email, source }, headers);
   }
 
   // ----- Bulk exports -----

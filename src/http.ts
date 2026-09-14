@@ -60,6 +60,17 @@ export function extractApiKey(req: IncomingMessage): { key: string; demo: boolea
   return { key: DEMO_KEY, demo: true };
 }
 
+/**
+ * The end user's IP. mcp.prop-line.com is a DNS-only CNAME to Fly, so Fly's
+ * edge stamps Fly-Client-IP with the real client. Used only to forward to
+ * the API's per-IP signup throttle (propline_create_free_api_key).
+ */
+export function endUserIp(req: IncomingMessage): string | undefined {
+  const fly = req.headers["fly-client-ip"];
+  if (typeof fly === "string" && fly.trim()) return fly.trim();
+  return req.socket.remoteAddress ?? undefined;
+}
+
 // Browser-based MCP clients (the MCP Inspector, web IDEs) preflight. Keep
 // it permissive: the endpoint is public and every call is authenticated by
 // the caller's own key, not by origin.
@@ -90,7 +101,9 @@ async function handleMcp(req: IncomingMessage, res: ServerResponse) {
   });
   if (demo) res.setHeader("X-PropLine-Demo-Key", "1");
   await server.connect(transport);
-  await withClient(client, demo, () => transport.handleRequest(req, res));
+  await withClient(client, demo, () => transport.handleRequest(req, res), {
+    clientIp: endUserIp(req),
+  });
 }
 
 const manifest = () => ({
