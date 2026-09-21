@@ -834,7 +834,7 @@ export const tools: ToolDef[] = [
     title: "Get NHL daily goals total",
     description:
       "Free-tier endpoint. Returns the synthetic daily NHL goals total " +
-      "(hockey's equivalent of the MLB Grand Salami) for a given UTC " +
+      "(hockey's equivalent of the MLB Grand Salami) for a given US Eastern " +
       "date — total goals scored across every NHL game on the slate " +
       "(including OT/SO) plus each book's implied Daily Goals Total " +
       "line (median of per-game primary totals across our NHL books). " +
