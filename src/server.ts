@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.40.0";
+export const VERSION = "0.41.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -946,6 +946,15 @@ export const tools: ToolDef[] = [
       properties: {
         sport_key: { type: "string" },
         event_id: { type: ["string", "number"] },
+        markets: {
+          type: "string",
+          description: "Comma-separated market keys to restrict to (e.g. pitcher_strikeouts,batter_hits).",
+        },
+        bookmakers: {
+          type: "string",
+          description:
+            "Comma-separated book keys to restrict to (e.g. bovada). Default returns all books; an unfiltered MLB game can run several MB, so pass one book when that is enough.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -954,6 +963,10 @@ export const tools: ToolDef[] = [
       client().getEventResults(
         args.sport_key as string,
         args.event_id as string | number,
+        {
+          markets: args.markets as string | undefined,
+          bookmakers: args.bookmakers as string | undefined,
+        },
       ),
   },
   {

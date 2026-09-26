@@ -328,8 +328,15 @@ export class PropLineClient {
     return this.request(`/v1/sports/${sportKey}/events/${eventId}/stats`);
   }
 
-  getEventResults(sportKey: string, eventId: string | number): Promise<unknown> {
-    return this.request(`/v1/sports/${sportKey}/events/${eventId}/results`);
+  getEventResults(
+    sportKey: string,
+    eventId: string | number,
+    opts: { markets?: string; bookmakers?: string } = {},
+  ): Promise<unknown> {
+    return this.request(`/v1/sports/${sportKey}/events/${eventId}/results`, {
+      markets: opts.markets,
+      bookmakers: opts.bookmakers,
+    });
   }
 
   getEventContext(sportKey: string, eventId: string | number): Promise<unknown> {
