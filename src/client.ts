@@ -139,6 +139,7 @@ export class PropLineClient {
       period?: string;
       includeLinks?: boolean;
       includeBookIds?: boolean;
+      includeDepth?: boolean;
     } = {},
   ): Promise<unknown> {
     const params = {
@@ -147,6 +148,7 @@ export class PropLineClient {
       period: opts.period,
       includeLinks: opts.includeLinks ? "true" : undefined,
       includeBookIds: opts.includeBookIds ? "true" : undefined,
+      includeDepth: opts.includeDepth ? "true" : undefined,
     };
     if (opts.eventId) {
       return this.request(
@@ -337,11 +339,23 @@ export class PropLineClient {
   getEventMovement(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string; bookmakers?: string; period?: string } = {},
+    opts: {
+      markets?: string;
+      bookmakers?: string;
+      period?: string;
+      since?: string;
+      includeBookIds?: boolean;
+    } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/events/${eventId}/movement`,
-      { markets: opts.markets, bookmakers: opts.bookmakers, period: opts.period },
+      {
+        markets: opts.markets,
+        bookmakers: opts.bookmakers,
+        period: opts.period,
+        since: opts.since,
+        includeBookIds: opts.includeBookIds ? "true" : undefined,
+      },
     );
   }
 

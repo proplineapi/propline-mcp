@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.39.0";
+export const VERSION = "0.40.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -307,7 +307,11 @@ export const tools: ToolDef[] = [
       "NEVER compare totals on (market key, point) alone — a team total " +
       "at 0.5 is not a game total at 0.5. Filter team == null for the " +
       "game total; team matches home_team/away_team exactly. Always null " +
-      "outside totals.",
+      "outside totals. Each outcome carries side ('home'/'away'/'draw', " +
+      "null for Over/Under/Yes/No/player legs) so you can pair legs without " +
+      "matching team spellings. Each event carries is_outright (true for a " +
+      "tournament listing with no away side) and, on tennis, tournament + " +
+      "tour (ATP/WTA/Challenger/ITF/…).",
     inputSchema: {
       type: "object",
       properties: {
@@ -341,6 +345,11 @@ export const tools: ToolDef[] = [
           description:
             "When true, each bookmaker block carries book_event_id and each outcome carries book_outcome_id — that book's OWN ids for the event and the priced selection, for joining onto a book's native feed by id instead of matching team/player names and lines. Kalshi ships both (event ticker + per-contract market ticker, e.g. KXMLBGAME-26AUG08NYYBOS-NYY); most other books ship an event id; books without a stable id return null. NB a two-sided market can share ONE book_outcome_id across both legs — a Kalshi contract is binary, so Over/Under are its YES/NO sides; the outcome's name says which side.",
         },
+        include_depth: {
+          type: "boolean",
+          description:
+            "When true, every outcome carries depth: up to three order-book levels beyond the served price, each {price (American), size (dollars)}. [] for books whose depth PropLine does not read (sportsbooks).",
+        },
       },
       required: ["sport_key"],
       additionalProperties: false,
@@ -353,6 +362,7 @@ export const tools: ToolDef[] = [
         period: args.period as string | undefined,
         includeLinks: args.include_links as boolean | undefined,
         includeBookIds: args.include_book_ids as boolean | undefined,
+        includeDepth: args.include_depth as boolean | undefined,
       }),
   },
   {
@@ -985,7 +995,9 @@ export const tools: ToolDef[] = [
       "the classic sharp-money signal, computed across all 27 books " +
       "PropLine polls. When a book moves the line itself, that outcome's " +
       "prob_shift is null and direction is 'line_moved' (excluded from the " +
-      "steam signal). No pull-only odds API can produce this. Hobby+ full; " +
+      "steam signal). No pull-only odds API can produce this. Each outcome " +
+      "carries outcome_id (the id /odds and webhooks use); steam rows carry " +
+      "team (team totals) plus open_point/latest_point. Hobby+ full; " +
       "free tier redacted.",
     inputSchema: {
       type: "object",
@@ -1007,6 +1019,16 @@ export const tools: ToolDef[] = [
           description:
             "Game-period filter (q1..q4, h1/h2, p1..p3, i1..i9, f3/f5/f7; comma-separated, or 'all'). Omit for full-game.",
         },
+        since: {
+          type: "string",
+          description:
+            "Measure movement from this moment instead of each line's first quote: ISO-8601 timestamp or a negative offset from now ('-6h', '-30m', '-2d'). Steam then covers only moves inside the window.",
+        },
+        include_book_ids: {
+          type: "boolean",
+          description:
+            "When true, each outcome also carries book_outcome_id — the book's own selection id.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -1019,6 +1041,8 @@ export const tools: ToolDef[] = [
           markets: args.markets as string | undefined,
           bookmakers: args.bookmakers as string | undefined,
           period: args.period as string | undefined,
+          since: args.since as string | undefined,
+          includeBookIds: args.include_book_ids as boolean | undefined,
         },
       ),
   },

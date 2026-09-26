@@ -27,7 +27,7 @@ The model uses these tools transparently:
 | `propline_list_sports` | Discover what sports PropLine polls (54 today) |
 | `propline_list_events` | Upcoming events for a sport, with ids |
 | `propline_list_event_markets` | Available market types for an event |
-| `propline_get_odds` | Live odds — bulk by sport or full props per event. Accepts `period` (q1/h1/p1/f5/…) to scope to game-period markets. |
+| `propline_get_odds` | Live odds — bulk by sport or full props per event. Accepts `period` (q1/h1/p1/f5/…) to scope to game-period markets; `include_depth` adds order-book depth per outcome. |
 | `propline_get_odds_history` | Hobby+: snapshot history per outcome; supports `period` (q1/h1/…) plus time-window filters (from/to, relative_from/relative_to, interval, changes_only) |
 | `propline_get_odds_closing` | Hobby+: opening **and** closing line per (book, market, outcome) — CLV helper. Accepts `period` to scope to a specific game period. |
 | `propline_grade_clv` | Hobby+: grade **placed** bets against their closing lines. Returns closing price, de-vigged closing fair (`fair_source` = sharpest book at close, not yours), `clv_pct` (price-vs-price, vig-blind) **and** `ev_vs_close_pct` (the honest number), plus the graded result once the game settles. Fail-closed matching; unstarted events come back `closing_is_final: false` and are excluded from the averages. `devig`: multiplicative or shin. |
@@ -41,7 +41,7 @@ The model uses these tools transparently:
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
 | `propline_get_event_context` | Game conditions a prop settles under — probable pitchers, lineup flag, home-plate umpire, first-pitch weather (free) |
-| `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+) |
+| `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+). `since` (e.g. `-6h`) measures from a moment; `include_book_ids` adds book ids. |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_get_player_history` | Player prop history with resolution |
 | `propline_get_player_games` | Player game log — recent games with every raw box-score stat per game, one call instead of one per event; `opponent` gives head-to-head (last N *meetings*). Raw-stat archive, so it includes games no book priced |
