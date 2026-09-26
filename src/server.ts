@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.38.0";
+export const VERSION = "0.39.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -441,8 +441,9 @@ export const tools: ToolDef[] = [
       "Hobby+ endpoint. Returns the OPENING and CLOSING line per (book, " +
       "market, outcome) for an event. Closing = the last snapshot at or " +
       "before commence_time (price/point/closing_at); opening = the " +
-      "first snapshot in the same 14-day pre-kickoff window " +
-      "(opening_price/opening_point/opening_at). Canonical CLV-tracking " +
+      "first snapshot PropLine holds for the outcome, however far before " +
+      "kickoff the book posted it (opening_price/opening_point/opening_at); " +
+      "pass opening_window to limit that lookback. Canonical CLV-tracking " +
       "helper; one call returns both data points your bet should be " +
       "measured against, instead of fetching full history and " +
       "post-processing. Compare the POINTS as well as the prices — on " +
@@ -468,6 +469,11 @@ export const tools: ToolDef[] = [
           description:
             "Game-period filter. Omitted = full-game markets only. Canonical codes (q1..q4, h1/h2, p1..p3, i1..i9, f3/f5/f7), comma-separated, or 'all'.",
         },
+        opening_window: {
+          type: ["string", "number"],
+          description:
+            "Limit the opening lookback to this many days before kickoff (1-3650), or 'all' (default: the first snapshot held). 14 matches the resolved-props export's opening columns.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -480,6 +486,10 @@ export const tools: ToolDef[] = [
           markets: args.markets as string | undefined,
           bookmakers: args.bookmakers as string | undefined,
           period: args.period as string | undefined,
+          openingWindow:
+            args.opening_window === undefined
+              ? undefined
+              : String(args.opening_window),
         },
       ),
   },

@@ -191,11 +191,21 @@ export class PropLineClient {
   getOddsClosing(
     sportKey: string,
     eventId: string | number,
-    opts: { markets?: string; bookmakers?: string; period?: string } = {},
+    opts: {
+      markets?: string;
+      bookmakers?: string;
+      period?: string;
+      openingWindow?: string;
+    } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/events/${eventId}/odds/closing`,
-      { markets: opts.markets, bookmakers: opts.bookmakers, period: opts.period },
+      {
+        markets: opts.markets,
+        bookmakers: opts.bookmakers,
+        period: opts.period,
+        opening_window: opts.openingWindow,
+      },
     );
   }
 
