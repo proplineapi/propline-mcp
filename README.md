@@ -45,9 +45,9 @@ The model uses these tools transparently:
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
 | `propline_search_players` | Free: find a player by name fragment → stable `player_id` + every spelling the books use (`known_names`) |
 | `propline_get_player_history` | Player prop history with resolution; accepts a `player_id`; optional `main_line_only`; entries carry `is_main_line` + `line_moved_in_play` |
-| `propline_get_player_games` | Player game log — recent games with every raw box-score stat per game, one call instead of one per event; `opponent` gives head-to-head (last N *meetings*). Raw-stat archive, so it includes games no book priced |
+| `propline_get_player_games` | Player game log — recent games with every raw box-score stat per game, one call instead of one per event; `opponent` gives head-to-head (last N *meetings*). Raw-stat archive, so it includes games no book priced. Accepts a `player_id` in place of the name |
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual (optional `dfs_odds_type` to scope to a PrizePicks flavor) |
-| `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines (`devig`: multiplicative or shin) |
+| `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines (`devig`: multiplicative or shin; `fair_source`: pick the anchor book(s), tried in order) |
 | `propline_get_event_projections` | Hobby+: market-implied consensus projection per (market, player) |
 | `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
 | `propline_list_webhooks` | Streaming Lite+: list webhook subscriptions (read-only, secrets masked) |

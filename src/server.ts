@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.42.0";
+export const VERSION = "0.43.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1165,7 +1165,9 @@ export const tools: ToolDef[] = [
       "use propline_get_player_trends for hit rates against a posted line. " +
       "`player_team`/`opponent`/`is_home` are null when the player's side " +
       "can't be identified, and always for individual sports (tennis, " +
-      "golf, UFC) — report them as unknown rather than guessing.",
+      "golf, UFC) — report them as unknown rather than guessing. " +
+      "Accepts a player_id in place of the name; the response carries " +
+      "player_id (null when the player has none yet).",
     inputSchema: {
       type: "object",
       properties: {
@@ -1173,7 +1175,7 @@ export const tools: ToolDef[] = [
         player_name: {
           type: "string",
           description:
-            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic'",
+            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic' — or a player_id from propline_search_players, e.g. 'mlb:592450'",
         },
         limit: {
           type: "number",
@@ -1294,6 +1296,14 @@ export const tools: ToolDef[] = [
             "longshot props (anytime TD, first scorer). The response " +
             "echoes devig_method; say which method the numbers came from.",
         },
+        fair_source: {
+          type: "string",
+          description:
+            "Optional anchor override: one book or a comma-separated list " +
+            "tried IN ORDER per line, from pinnacle, polymarket, kalshi, " +
+            "bovada, smarkets (anything else is a 400). Lines none of them " +
+            "anchor are dropped. Omit for the default order.",
+        },
       },
       required: ["sport_key", "event_id"],
       additionalProperties: false,
@@ -1306,6 +1316,7 @@ export const tools: ToolDef[] = [
           markets: args.markets as string | undefined,
           bookmakers: args.bookmakers as string | undefined,
           devig: args.devig as "multiplicative" | "shin" | undefined,
+          fairSource: args.fair_source as string | undefined,
         },
       );
       // min_ev_pct is applied HERE, client-side. It used to be forwarded
