@@ -366,16 +366,38 @@ export class PropLineClient {
     );
   }
 
+  // ----- Player search -----
+
+  searchPlayers(
+    sportKey: string,
+    search: string,
+    opts: { limit?: number } = {},
+  ): Promise<unknown> {
+    return this.request(`/v1/sports/${sportKey}/players`, {
+      search,
+      limit: opts.limit,
+    });
+  }
+
   // ----- Player history -----
 
   getPlayerHistory(
     sportKey: string,
     playerName: string,
-    opts: { limit?: number; markets?: string } = {},
+    opts: { limit?: number; market?: string; mainLineOnly?: boolean } = {},
   ): Promise<unknown> {
     return this.request(
       `/v1/sports/${sportKey}/players/${encodeURIComponent(playerName)}/history`,
-      { limit: opts.limit, markets: opts.markets },
+      {
+        limit: opts.limit,
+        market: opts.market,
+        main_line_only:
+          opts.mainLineOnly === undefined
+            ? undefined
+            : opts.mainLineOnly
+              ? "true"
+              : "false",
+      },
     );
   }
 

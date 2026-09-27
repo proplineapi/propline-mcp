@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.41.0";
+export const VERSION = "0.42.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1060,12 +1060,44 @@ export const tools: ToolDef[] = [
       ),
   },
   {
+    name: "propline_search_players",
+    title: "Search players",
+    description:
+      "Find a player by name fragment and get their stable player_id " +
+      "(e.g. 'mlb:677951') plus every spelling the books use " +
+      "(known_names). Free tier. Pass the player_id as player_name to " +
+      "propline_get_player_history / propline_get_player_trends to avoid " +
+      "name-spelling ambiguity.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        search: {
+          type: "string",
+          description: "Name fragment to match, e.g. 'judge'",
+        },
+        limit: {
+          type: "number",
+          description: "Max players to return, 1-100. Default 25.",
+        },
+      },
+      required: ["sport_key", "search"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().searchPlayers(args.sport_key as string, args.search as string, {
+        limit: args.limit as number | undefined,
+      }),
+  },
+  {
     name: "propline_get_player_history",
     title: "Get player prop history",
     description:
-      "Player prop history across recent games. Returns each prior prop " +
-      "this player took with line, prices, resolution, and actual value. " +
-      "Pro tier returns full data; free tier returns redacted " +
+      "Player prop history across recent games for one market. Returns " +
+      "each prior prop this player took with line, prices, resolution, " +
+      "actual value, is_main_line (the book's main line vs an alt-ladder " +
+      "rung) and line_moved_in_play. Pass main_line_only=true to drop alt " +
+      "rungs. Pro tier returns full data; free tier returns redacted " +
       "resolution/actual_value with an upgrade pointer.",
     inputSchema: {
       type: "object",
@@ -1074,16 +1106,26 @@ export const tools: ToolDef[] = [
         player_name: {
           type: "string",
           description:
-            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic'",
+            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic' — or a player_id from propline_search_players, e.g. 'mlb:592450'",
+        },
+        market: {
+          type: "string",
+          description:
+            "Market key, e.g. 'pitcher_strikeouts' or 'player_points'",
+        },
+        markets: {
+          type: "string",
+          description:
+            "Deprecated alias: the first market of a comma-separated list is used when `market` is omitted",
         },
         limit: {
           type: "number",
           description: "Max number of past games (default 20, max 100)",
         },
-        markets: {
-          type: "string",
+        main_line_only: {
+          type: "boolean",
           description:
-            "Comma-separated subset of markets (e.g. 'player_points,player_rebounds')",
+            "Only each book's main line (drops alt-ladder rungs). Omit for every line.",
         },
       },
       required: ["sport_key", "player_name"],
@@ -1095,7 +1137,11 @@ export const tools: ToolDef[] = [
         args.player_name as string,
         {
           limit: args.limit as number | undefined,
-          markets: args.markets as string | undefined,
+          market:
+            (args.market as string | undefined) ??
+            ((args.markets as string | undefined)?.split(",")[0]?.trim() ||
+              undefined),
+          mainLineOnly: args.main_line_only as boolean | undefined,
         },
       ),
   },
@@ -1176,7 +1222,7 @@ export const tools: ToolDef[] = [
         player_name: {
           type: "string",
           description:
-            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic'",
+            "Player name as it appears in box scores — e.g. 'Aaron Judge', 'Nikola Jokic' — or a player_id from propline_search_players, e.g. 'mlb:592450'",
         },
         market: {
           type: "string",

@@ -43,7 +43,8 @@ The model uses these tools transparently:
 | `propline_get_event_context` | Game conditions a prop settles under — probable pitchers, lineup flag, home-plate umpire, first-pitch weather (free) |
 | `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+). `since` (e.g. `-6h`) measures from a moment; `include_book_ids` adds book ids. |
 | `propline_get_event_results` | Pro: graded won/lost/push per prop |
-| `propline_get_player_history` | Player prop history with resolution |
+| `propline_search_players` | Free: find a player by name fragment → stable `player_id` + every spelling the books use (`known_names`) |
+| `propline_get_player_history` | Player prop history with resolution; accepts a `player_id`; optional `main_line_only`; entries carry `is_main_line` + `line_moved_in_play` |
 | `propline_get_player_games` | Player game log — recent games with every raw box-score stat per game, one call instead of one per event; `opponent` gives head-to-head (last N *meetings*). Raw-stat archive, so it includes games no book priced |
 | `propline_get_player_trends` | Hit-rate trends — over/under/push splits over last 5/10/20/50 graded games, streak, avg actual (optional `dfs_odds_type` to scope to a PrizePicks flavor) |
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines (`devig`: multiplicative or shin) |
@@ -55,7 +56,7 @@ The model uses these tools transparently:
 
 ## Hosted endpoint (no install)
 
-The same 29 tools are served over **Streamable HTTP** at
+The same 30 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp
@@ -120,7 +121,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
 }
 ```
 
-Restart Claude Desktop. The hammer icon should show 27 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
+Restart Claude Desktop. The hammer icon should show 30 PropLine tools. (Or skip the install and add `https://mcp.prop-line.com/mcp` as a custom connector — see the hosted endpoint above.)
 
 #### Claude Code
 
