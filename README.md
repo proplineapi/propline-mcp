@@ -39,6 +39,7 @@ The model uses these tools transparently:
 | `propline_get_mlb_grand_salami` | Synthetic daily MLB Grand Salami — total runs + each book's implied line (free) |
 | `propline_get_nhl_daily_goals_total` | Synthetic daily NHL goals total — hockey's Grand Salami (free) |
 | `propline_get_resolution_summary` | Graded-prop volume + per-sport/market breakdown (free) |
+| `propline_get_book_accuracy` | Sportsbook accuracy report — how well each book prices props, vs the market (free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
 | `propline_get_event_context` | Game conditions a prop settles under — probable pitchers, lineup flag, home-plate umpire, first-pitch weather (free) |
 | `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+). `since` (e.g. `-6h`) measures from a moment; `include_book_ids` adds book ids. |
@@ -56,7 +57,7 @@ The model uses these tools transparently:
 
 ## Hosted endpoint (no install)
 
-The same 30 tools are served over **Streamable HTTP** at
+The same 31 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp

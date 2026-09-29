@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.43.0";
+export const VERSION = "0.44.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -902,6 +902,41 @@ export const tools: ToolDef[] = [
     },
     handler: (args) =>
       client().getResolutionSummary({ days: args.days as number | undefined }),
+  },
+  {
+    name: "propline_get_book_accuracy",
+    title: "Get sportsbook accuracy report",
+    description:
+      "Free-tier endpoint. How well each sportsbook prices player props: " +
+      "each book's closing prop prices are de-vigged and scored (Brier) " +
+      "against the real result and against the other books on the same " +
+      "line. Per book: props scored, brier, consensus_brier, skill_bp " +
+      "(> 0 = closer to the result than the market average) with a 95% " +
+      "interval, verdict (beats_market / trails_market / in_line) and " +
+      "margin_pct (average overround), plus by_sport and by_market " +
+      "breakdowns. Useful for: 'which book prices props most accurately', " +
+      "'which book has the lowest margin'. A pricing report, never a " +
+      "profit claim or betting edge.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        days: {
+          type: "number",
+          description: "Look-back window, 7-120. Defaults to 30.",
+        },
+        sport: {
+          type: "string",
+          description: "Optional sport key, e.g. baseball_mlb.",
+        },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getBookAccuracy({
+        days: args.days as number | undefined,
+        sport: args.sport as string | undefined,
+      }),
   },
   {
     name: "propline_get_event_stats",
