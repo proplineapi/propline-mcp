@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.44.1";
+export const VERSION = "0.45.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -902,6 +902,27 @@ export const tools: ToolDef[] = [
     },
     handler: (args) =>
       client().getResolutionSummary({ days: args.days as number | undefined }),
+  },
+  {
+    name: "propline_get_event_ids",
+    title: "Get event id crosswalk",
+    description:
+      "Free-tier endpoint. Id crosswalk for one sport: one object per " +
+      "event from 3 days ago to 30 days ahead with PropLine's event id, " +
+      "commence_time, teams (+ team keys/ids), espn_event_id, mlb_game_pk, " +
+      "merged_from_event_ids, and each sportsbook's own event id + link " +
+      "under books. Useful for: 'join PropLine events onto ESPN / the MLB " +
+      "Stats API / a sportsbook's own feed', 'what is DraftKings' id for " +
+      "this game'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "Sport key, e.g. baseball_mlb." },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) => client().getEventIds(args.sport_key as string),
   },
   {
     name: "propline_get_book_accuracy",

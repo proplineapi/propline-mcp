@@ -320,6 +320,10 @@ export class PropLineClient {
     });
   }
 
+  getEventIds(sportKey: string): Promise<unknown> {
+    return this.request(`/v1/sports/${sportKey}/ids`);
+  }
+
   getBookAccuracy(opts: { days?: number; sport?: string } = {}): Promise<unknown> {
     return this.request(`/v1/books/accuracy`, {
       days: opts.days,
