@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.46.0";
+export const VERSION = "0.47.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1493,7 +1493,8 @@ export const tools: ToolDef[] = [
       "secrets are always masked, and this server deliberately has no " +
       "create/update/delete tools — manage subscriptions via the REST API " +
       "or SDKs. Each row shows url, subscribed events (line_movement, " +
-      "resolution, steam, market_suspended), filters and active status. " +
+      "resolution, steam, market_suspended, ev), filters (incl. " +
+      "min_ev_pct / max_ev_pct for ev events) and active status. " +
       "Use this first to find the webhook id for " +
       "propline_get_webhook_deliveries.",
     inputSchema: {
