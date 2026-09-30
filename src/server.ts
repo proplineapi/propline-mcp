@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.45.0";
+export const VERSION = "0.46.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1358,7 +1358,20 @@ export const tools: ToolDef[] = [
             "Optional anchor override: one book or a comma-separated list " +
             "tried IN ORDER per line, from pinnacle, polymarket, kalshi, " +
             "bovada, smarkets (anything else is a 400). Lines none of them " +
-            "anchor are dropped. Omit for the default order.",
+            "anchor are dropped. Omit for the default order. The single " +
+            "value 'consensus' (not combinable with book names) uses the " +
+            "median no-vig probability across every book quoting a clean, " +
+            "fresh two-sided market (3+ books); each line then lists the " +
+            "books used in fair_books. It is opt-in and NOT a proven better " +
+            "anchor — never describe it as more profitable.",
+        },
+        max_age: {
+          type: "integer",
+          minimum: 0,
+          description:
+            "Optional, seconds. Drops quoted prices the book has not " +
+            "delivered within that many seconds (each outcome carries " +
+            "last_update). The fair line is unaffected.",
         },
       },
       required: ["sport_key", "event_id"],
@@ -1373,6 +1386,7 @@ export const tools: ToolDef[] = [
           bookmakers: args.bookmakers as string | undefined,
           devig: args.devig as "multiplicative" | "shin" | undefined,
           fairSource: args.fair_source as string | undefined,
+          maxAge: args.max_age as number | undefined,
         },
       );
       // min_ev_pct is applied HERE, client-side. It used to be forwarded

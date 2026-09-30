@@ -448,6 +448,7 @@ export class PropLineClient {
       bookmakers?: string;
       devig?: string;
       fairSource?: string;
+      maxAge?: number;
     } = {},
   ): Promise<unknown> {
     // NB: no min_ev_pct here. This client used to send one, but /ev has
@@ -459,6 +460,7 @@ export class PropLineClient {
       bookmakers: opts.bookmakers,
       devig: opts.devig,
       fair_source: opts.fairSource,
+      max_age: opts.maxAge,
     });
   }
 
