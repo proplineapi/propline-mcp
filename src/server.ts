@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.48.0";
+export const VERSION = "0.49.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -284,7 +284,11 @@ export const tools: ToolDef[] = [
       "Marathon Bet, 1xBet, TAB, Underdog Fantasy, PrizePicks, " +
       "Sleeper, Dabble, Betr Picks, ReBet, Kalshi, Polymarket, " +
       "Matchbook, Smarkets, Novig, ProphetX — coverage varies by " +
-      "sport). Underdog Fantasy outcomes carry a " +
+      "sport). Every market carries line_type: 'main', 'alternate' or " +
+      "'milestone' (an N+ rung such as '3+ Strikeouts'); filter to " +
+      "line_type == 'main' for each book's primary line. Kalshi and " +
+      "Polymarket US rows also set line_type on each outcome. " +
+      "Underdog Fantasy outcomes carry a " +
       "payout_multiplier on EVERY outcome (1.0 = standard pick, e.g. " +
       "1.5 = boost, 0.75 = discount; null means the book is not " +
       "Underdog) — keep only payout_multiplier == 1.0 when comparing " +
