@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.49.0";
+export const VERSION = "0.49.1";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -278,12 +278,13 @@ export const tools: ToolDef[] = [
       "the whole sport. Pass markets as a comma-separated list (e.g. " +
       "'h2h,spreads,totals' or 'player_points,player_rebounds'). " +
       "Response includes a bookmakers[] array across every book that " +
-      "carries the requested markets (currently up to 27: Bovada, " +
+      "carries the requested markets (currently up to 32: Bovada, " +
       "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
-      "BetUS, BetOnline.ag, LowVig.ag, MyBookie.ag, Fanatics, " +
-      "Marathon Bet, 1xBet, TAB, Underdog Fantasy, PrizePicks, " +
-      "Sleeper, Dabble, Betr Picks, ReBet, Kalshi, Polymarket, " +
-      "Matchbook, Smarkets, Novig, ProphetX — coverage varies by " +
+      "Betway, Hard Rock Bet, Fanatics, BetUS, BetOnline.ag, " +
+      "LowVig.ag, MyBookie.ag, Marathon Bet, 1xBet, TAB AU, ReBet, " +
+      "Fliff, Courtside, PrizePicks, Underdog, Sleeper, Dabble, " +
+      "ParlayPlay, Kalshi, Polymarket, Polymarket US, Matchbook, " +
+      "Smarkets, Novig, ProphetX — coverage varies by " +
       "sport). Every market carries line_type: 'main', 'alternate' or " +
       "'milestone' (an N+ rung such as '3+ Strikeouts'); filter to " +
       "line_type == 'main' for each book's primary line. Kalshi and " +
@@ -1065,7 +1066,7 @@ export const tools: ToolDef[] = [
       "Per (book, market, outcome): opening line, latest line, signed " +
       "implied-probability shift, point shift, direction. The steam[] " +
       "array flags outcomes that multiple books moved the same direction — " +
-      "the classic sharp-money signal, computed across all 27 books " +
+      "the classic sharp-money signal, computed across all 32 books " +
       "PropLine polls. When a book moves the line itself, that outcome's " +
       "prob_shift is null and direction is 'line_moved' (excluded from the " +
       "steam signal). No pull-only odds API can produce this. Each outcome " +
