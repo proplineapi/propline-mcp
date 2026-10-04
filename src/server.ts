@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.49.1";
+export const VERSION = "0.49.2";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -278,12 +278,12 @@ export const tools: ToolDef[] = [
       "the whole sport. Pass markets as a comma-separated list (e.g. " +
       "'h2h,spreads,totals' or 'player_points,player_rebounds'). " +
       "Response includes a bookmakers[] array across every book that " +
-      "carries the requested markets (currently up to 32: Bovada, " +
+      "carries the requested markets (currently up to 33: Bovada, " +
       "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
       "Betway, Hard Rock Bet, Fanatics, BetUS, BetOnline.ag, " +
       "LowVig.ag, MyBookie.ag, Marathon Bet, 1xBet, TAB AU, ReBet, " +
       "Fliff, Courtside, PrizePicks, Underdog, Sleeper, Dabble, " +
-      "ParlayPlay, Kalshi, Polymarket, Polymarket US, Matchbook, " +
+      "ParlayPlay, DraftKings Pick6, Kalshi, Polymarket, Polymarket US, Matchbook, " +
       "Smarkets, Novig, ProphetX — coverage varies by " +
       "sport). Every market carries line_type: 'main', 'alternate' or " +
       "'milestone' (an N+ rung such as '3+ Strikeouts'); filter to " +
@@ -333,7 +333,7 @@ export const tools: ToolDef[] = [
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betus, betonlineag, lowvig, mybookieag, fanatics, marathon, onexbet, tab_au, underdog, prizepicks, sleeper, dabble, betr, rebet, kalshi, polymarket, matchbook, smarkets, novig, prophetx). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betus, betonlineag, lowvig, mybookieag, fanatics, marathon, onexbet, tab_au, underdog, prizepicks, sleeper, dabble, pick6, betr, rebet, kalshi, polymarket, matchbook, smarkets, novig, prophetx). Default returns all available.",
         },
         period: {
           type: "string",
@@ -1448,7 +1448,8 @@ export const tools: ToolDef[] = [
       "sorted best-first (one row per book, each with last_update). " +
       "Companion to propline_get_event_ev: /ev says whether a price " +
       "beats the no-vig fair line; best-line says which book pays the " +
-      "most. DFS pick'em books (PrizePicks, Sleeper, Dabble) are " +
+      "most. DFS pick'em books (PrizePicks, Sleeper, Dabble, " +
+      "ParlayPlay, DraftKings Pick6) are " +
       "excluded; Underdog only at clean two-way lines. Optional " +
       "bookmakers filter to shop only the books the user holds " +
       "accounts at.",
