@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.49.2";
+export const VERSION = "0.49.3";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -278,13 +278,14 @@ export const tools: ToolDef[] = [
       "the whole sport. Pass markets as a comma-separated list (e.g. " +
       "'h2h,spreads,totals' or 'player_points,player_rebounds'). " +
       "Response includes a bookmakers[] array across every book that " +
-      "carries the requested markets (currently up to 33: Bovada, " +
-      "DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
-      "Betway, Hard Rock Bet, Fanatics, BetUS, BetOnline.ag, " +
-      "LowVig.ag, MyBookie.ag, Marathon Bet, 1xBet, TAB AU, ReBet, " +
-      "Fliff, Courtside, PrizePicks, Underdog, Sleeper, Dabble, " +
-      "ParlayPlay, DraftKings Pick6, Kalshi, Polymarket, Polymarket US, Matchbook, " +
-      "Smarkets, Novig, ProphetX — coverage varies by " +
+      "carries the requested markets (currently up to 37 — sportsbooks: " +
+      "Bovada, DraftKings, FanDuel, Pinnacle, BetMGM, BetRivers, Unibet, " +
+      "Betway, Hard Rock Bet, Fanatics, BetUS, BetOnline.ag, LowVig.ag, " +
+      "1xBet, TAB AU, ReBet, Fliff, Courtside, Sportzino, Heritage " +
+      "Sports, Jazz Sports, YouWager, Thrillzz; DFS: PrizePicks, " +
+      "Underdog, Sleeper, Dabble, ParlayPlay, DraftKings Pick6; exchanges " +
+      "and prediction markets: Kalshi, Polymarket, Polymarket US, " +
+      "Matchbook, Smarkets, Novig, ProphetX, SX Bet — coverage varies by " +
       "sport). Every market carries line_type: 'main', 'alternate' or " +
       "'milestone' (an N+ rung such as '3+ Strikeouts'); filter to " +
       "line_type == 'main' for each book's primary line. Kalshi and " +
@@ -333,7 +334,7 @@ export const tools: ToolDef[] = [
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betus, betonlineag, lowvig, mybookieag, fanatics, marathon, onexbet, tab_au, underdog, prizepicks, sleeper, dabble, pick6, betr, rebet, kalshi, polymarket, matchbook, smarkets, novig, prophetx). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betway, hardrock, fanatics, betus, betonlineag, lowvig, onexbet, tab_au, rebet, fliff, courtside, sportzino, heritage, jazzsports, youwager, thrillzz, prizepicks, underdog, sleeper, dabble, parlayplay, pick6, kalshi, polymarket, polymarket_us, matchbook, smarkets, novig, prophetx, sxbet). Default returns all available.",
         },
         period: {
           type: "string",
@@ -391,7 +392,7 @@ export const tools: ToolDef[] = [
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (e.g. 'draftkings,fanduel'). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betway, hardrock, fanatics, betus, betonlineag, lowvig, onexbet, tab_au, rebet, fliff, courtside, sportzino, heritage, jazzsports, youwager, thrillzz, prizepicks, underdog, sleeper, dabble, parlayplay, pick6, kalshi, polymarket, polymarket_us, matchbook, smarkets, novig, prophetx, sxbet). Default returns all available.",
         },
         from: {
           type: "string",
@@ -477,7 +478,7 @@ export const tools: ToolDef[] = [
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (e.g. 'draftkings,fanduel'). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betway, hardrock, fanatics, betus, betonlineag, lowvig, onexbet, tab_au, rebet, fliff, courtside, sportzino, heritage, jazzsports, youwager, thrillzz, prizepicks, underdog, sleeper, dabble, parlayplay, pick6, kalshi, polymarket, polymarket_us, matchbook, smarkets, novig, prophetx, sxbet). Default returns all available.",
         },
         period: {
           type: "string",
@@ -1066,7 +1067,7 @@ export const tools: ToolDef[] = [
       "Per (book, market, outcome): opening line, latest line, signed " +
       "implied-probability shift, point shift, direction. The steam[] " +
       "array flags outcomes that multiple books moved the same direction — " +
-      "the classic sharp-money signal, computed across all 32 books " +
+      "the classic sharp-money signal, computed across all 37 books " +
       "PropLine polls. When a book moves the line itself, that outcome's " +
       "prob_shift is null and direction is 'line_moved' (excluded from the " +
       "steam signal). No pull-only odds API can produce this. Each outcome " +
@@ -1086,7 +1087,7 @@ export const tools: ToolDef[] = [
         bookmakers: {
           type: "string",
           description:
-            "Comma-separated subset of book keys (e.g. 'draftkings,fanduel'). Default returns all available.",
+            "Comma-separated subset of book keys (bovada, draftkings, fanduel, pinnacle, betmgm, betrivers, unibet, betway, hardrock, fanatics, betus, betonlineag, lowvig, onexbet, tab_au, rebet, fliff, courtside, sportzino, heritage, jazzsports, youwager, thrillzz, prizepicks, underdog, sleeper, dabble, parlayplay, pick6, kalshi, polymarket, polymarket_us, matchbook, smarkets, novig, prophetx, sxbet). Default returns all available.",
         },
         period: {
           type: "string",
