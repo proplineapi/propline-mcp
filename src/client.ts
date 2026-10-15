@@ -331,6 +331,27 @@ export class PropLineClient {
     });
   }
 
+  getGolfRounds(
+    player: string,
+    opts: { tour?: string; limit?: number; since?: string } = {}
+  ): Promise<unknown> {
+    return this.request(`/v1/golf/players/${encodeURIComponent(player)}/rounds`, {
+      tour: opts.tour,
+      limit: opts.limit,
+      since: opts.since,
+    });
+  }
+
+  getGolfTournaments(
+    opts: { tour?: string; season?: number; limit?: number } = {}
+  ): Promise<unknown> {
+    return this.request(`/v1/golf/tournaments`, {
+      tour: opts.tour,
+      season: opts.season,
+      limit: opts.limit,
+    });
+  }
+
   getFutures(sportKey: string): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/futures`);
   }

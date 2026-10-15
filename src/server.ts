@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.49.3";
+export const VERSION = "0.50.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -963,6 +963,64 @@ export const tools: ToolDef[] = [
       client().getBookAccuracy({
         days: args.days as number | undefined,
         sport: args.sport as string | undefined,
+      }),
+  },
+  {
+    name: "propline_get_golf_rounds",
+    title: "Get a golfer's round history",
+    description:
+      "Free-tier endpoint. A golfer's completed rounds, newest first, with " +
+      "strokes, score to par and hole counts (eagles, birdies, pars, bogeys, " +
+      "doubles), plus last-5/10/20 averages. Every player in the field, back " +
+      "to 2024; a round in progress is never included. Filter by tour (pga, dp_world, liv, lpga, korn_ferry, champions). " +
+      "Hole counts are null on DP World, LPGA and some LIV rounds. Useful " +
+      "for: 'Scheffler's last 10 rounds', 'how has Bryson scored on LIV lately'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        player: {
+          type: "string",
+          description: "Player name (case/accents ignored) or ESPN athlete id.",
+        },
+        tour: {
+          type: "string",
+          description: "Optional comma-separated tours: pga, dp_world, liv, lpga, korn_ferry, champions. Omit for all.",
+        },
+        limit: { type: "number", description: "Rounds to return, 1-200. Defaults to 20." },
+        since: { type: "string", description: "Optional YYYY-MM-DD lower bound." },
+      },
+      required: ["player"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getGolfRounds(args.player as string, {
+        tour: args.tour as string | undefined,
+        limit: args.limit as number | undefined,
+        since: args.since as string | undefined,
+      }),
+  },
+  {
+    name: "propline_get_golf_tournaments",
+    title: "List golf tournaments with round data",
+    description:
+      "Free-tier endpoint. Golf tournaments we hold round data for, newest " +
+      "first, with player and round counts. Filter by tour (pga, dp_world, liv, lpga, korn_ferry, champions) " +
+      "and season.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        tour: { type: "string", description: "Optional comma-separated tours." },
+        season: { type: "number", description: "Optional season year." },
+        limit: { type: "number", description: "1-500. Defaults to 50." },
+      },
+      required: [],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getGolfTournaments({
+        tour: args.tour as string | undefined,
+        season: args.season as number | undefined,
+        limit: args.limit as number | undefined,
       }),
   },
   {
