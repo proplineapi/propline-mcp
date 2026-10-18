@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.50.1";
+export const VERSION = "0.51.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1021,6 +1021,60 @@ export const tools: ToolDef[] = [
         tour: args.tour as string | undefined,
         season: args.season as number | undefined,
         limit: args.limit as number | undefined,
+      }),
+  },
+  {
+    name: "propline_get_injuries",
+    title: "Get a sport's injury report",
+    description:
+      "Free-tier endpoint. The current injury report for NFL, NCAAF, NBA, WNBA, " +
+      "NHL or MLB: each listed player with status (Out, Questionable, " +
+      "Day-To-Day, 15-Day-IL...), status_code, injury, expected return and " +
+      "status_since (when the current status began). Source: ESPN, every 10 " +
+      "minutes. Useful for: 'who is out for the Chiefs', 'which NBA players " +
+      "are questionable tonight' — check it before trusting a player prop.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "football_nfl, football_ncaaf, basketball_nba, basketball_wnba, hockey_nhl or baseball_mlb." },
+        team: { type: "string", description: "Optional team name or abbreviation, e.g. KC." },
+        status: {
+          type: "string",
+          description:
+            "Optional comma-separated status codes: out, doubtful, questionable, probable, day_to_day, injured_list, suspended, other.",
+        },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getInjuries(args.sport_key as string, {
+        team: args.team as string | undefined,
+        status: args.status as string | undefined,
+      }),
+  },
+  {
+    name: "propline_get_injury_history",
+    title: "Get injury status changes",
+    description:
+      "Free-tier endpoint. Every injury status change in a sport over the last " +
+      "1-90 days, newest first: old_status -> new_status with the time we saw " +
+      "it (new_status null = came off the report). History starts " +
+      "2026-10-18. Pair with odds history to see how lines moved on a ruling.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "football_nfl, football_ncaaf, basketball_nba, basketball_wnba, hockey_nhl or baseball_mlb." },
+        days: { type: "number", description: "1-90. Defaults to 7." },
+        player: { type: "string", description: "Optional player name (substring match)." },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getInjuryHistory(args.sport_key as string, {
+        days: args.days as number | undefined,
+        player: args.player as string | undefined,
       }),
   },
   {

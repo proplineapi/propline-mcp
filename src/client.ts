@@ -352,6 +352,26 @@ export class PropLineClient {
     });
   }
 
+  getInjuries(
+    sportKey: string,
+    opts: { team?: string; status?: string } = {}
+  ): Promise<unknown> {
+    return this.request(`/v1/sports/${encodeURIComponent(sportKey)}/injuries`, {
+      team: opts.team,
+      status: opts.status,
+    });
+  }
+
+  getInjuryHistory(
+    sportKey: string,
+    opts: { days?: number; player?: string } = {}
+  ): Promise<unknown> {
+    return this.request(`/v1/sports/${encodeURIComponent(sportKey)}/injuries/history`, {
+      days: opts.days,
+      player: opts.player,
+    });
+  }
+
   getFutures(sportKey: string): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/futures`);
   }
