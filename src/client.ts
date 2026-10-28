@@ -226,6 +226,11 @@ export class PropLineClient {
     return this.postRequest(`/v1/bets/settle`, bets);
   }
 
+  /** Fair price of a parlay across games. Hobby+. */
+  priceParlay(body: unknown): Promise<unknown> {
+    return this.postRequest(`/v1/parlay/price`, body);
+  }
+
   /**
    * Price a same-game parlay at the book's own correlated odds (FanDuel
    * today). Hobby+. See the propline_price_sgp tool description.
@@ -327,6 +332,15 @@ export class PropLineClient {
 
   getEventIds(sportKey: string): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/ids`);
+  }
+
+  lookupEventIds(opts: {
+    book?: string;
+    book_event_id?: string;
+    espn_event_id?: string;
+    mlb_game_pk?: string;
+  }): Promise<unknown> {
+    return this.request(`/v1/ids/lookup`, opts);
   }
 
   getBookAccuracy(opts: { days?: number; sport?: string } = {}): Promise<unknown> {

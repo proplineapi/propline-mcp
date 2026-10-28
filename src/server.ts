@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.52.0";
+export const VERSION = "0.53.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -673,6 +673,52 @@ export const tools: ToolDef[] = [
     handler: (args) => client().settleBets(args.bets as unknown[]),
   },
   {
+    name: "propline_price_parlay",
+    title: "Price a parlay across games",
+    description:
+      "Hobby+ endpoint. Fair price of a parlay across games (2-15 legs), " +
+      "from the same no-vig fair lines as propline_get_event_ev. Returns " +
+      "fair_price for the parlay, each leg's fair_price and best price + " +
+      "book, best_legs_price, books (every book that prices all the legs: " +
+      "the product of its leg prices, with ev_pct), and offered_ev_pct when " +
+      "price is given. The fair price ASSUMES INDEPENDENT LEGS: legs on the " +
+      "same event are flagged same_game — say so, and use " +
+      "propline_price_sgp for same-game parlays. A leg that matches no fair " +
+      "line returns a reason and the parlay is not priced. Never present " +
+      "the EV as a profit guarantee.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        legs: {
+          type: "array",
+          minItems: 2,
+          maxItems: 15,
+          items: {
+            type: "object",
+            properties: {
+              sport_key: { type: "string" },
+              event_id: { type: ["string", "number"] },
+              market: { type: "string" },
+              selection: { type: "string", description: "Team, player, or Over/Under for a game total." },
+              side: { type: "string" },
+              point: { type: "number" },
+              team: { type: "string", description: "For a team total." },
+              price: { type: "number", description: "Offered price for this leg." },
+            },
+            required: ["sport_key", "event_id", "market", "selection"],
+            additionalProperties: false,
+          },
+        },
+        price: { type: "number", description: "Parlay price offered (American)." },
+        devig: { type: "string", enum: ["multiplicative", "shin"] },
+      },
+      required: ["legs"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().priceParlay({ legs: args.legs, price: args.price, devig: args.devig }),
+  },
+  {
     name: "propline_price_sgp",
     title: "Price a same-game parlay at the book's own odds",
     description:
@@ -994,6 +1040,35 @@ export const tools: ToolDef[] = [
       additionalProperties: false,
     },
     handler: (args) => client().getEventIds(args.sport_key as string),
+  },
+  {
+    name: "propline_lookup_event_ids",
+    title: "Find an event by a book, ESPN or MLB id",
+    description:
+      "Free-tier endpoint. Reverse id lookup: give a sportsbook's own " +
+      "event id (book + book_event_id, e.g. book='pinnacle'), an ESPN event " +
+      "id or an MLB gamePk and get PropLine's event back with its full id " +
+      "crosswalk, status, completed flag and final score. Any date. Up to " +
+      "50 comma-separated ids; misses come back in not_found. Useful for: " +
+      "'what was the result of Pinnacle event 1612345678', 'which PropLine " +
+      "event is this ESPN game'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        book: { type: "string", description: "Book key, e.g. pinnacle, draftkings, kalshi." },
+        book_event_id: { type: "string", description: "That book's event id(s), comma-separated." },
+        espn_event_id: { type: "string" },
+        mlb_game_pk: { type: "string" },
+      },
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().lookupEventIds({
+        book: args.book as string | undefined,
+        book_event_id: args.book_event_id as string | undefined,
+        espn_event_id: args.espn_event_id as string | undefined,
+        mlb_game_pk: args.mlb_game_pk as string | undefined,
+      }),
   },
   {
     name: "propline_get_book_accuracy",
