@@ -221,6 +221,11 @@ export class PropLineClient {
     return this.postRequest(`/v1/clv/grade${qs}`, bets);
   }
 
+  /** Settle placed bets (singles or parlays). Hobby+. */
+  settleBets(bets: unknown[]): Promise<unknown> {
+    return this.postRequest(`/v1/bets/settle`, bets);
+  }
+
   /**
    * Price a same-game parlay at the book's own correlated odds (FanDuel
    * today). Hobby+. See the propline_price_sgp tool description.

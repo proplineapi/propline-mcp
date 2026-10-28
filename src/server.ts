@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.51.0";
+export const VERSION = "0.52.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -606,6 +606,71 @@ export const tools: ToolDef[] = [
     },
     handler: (args) =>
       client().gradeClv(args.bets as unknown[], args.devig as string | undefined),
+  },
+  {
+    name: "propline_settle_bets",
+    title: "Settle placed bets (won / lost / push / void)",
+    description:
+      "Hobby+ endpoint. Settles PLACED bets, singles or parlays, against " +
+      "final results: each comes back won, lost, push, void, half_won or " +
+      "half_lost, with actual_value (the stat or score it settled on), " +
+      "payout (stake included) and profit, plus a summary. The book and " +
+      "the line are free: a bet at a book PropLine does not carry, or at a " +
+      "line nobody posted, is graded by running PropLine's grader at that " +
+      "line (source='computed'); a named bookmaker whose outcome was stored " +
+      "at that exact line uses its own grade (source='stored'). Asian " +
+      "quarter lines (2.75, -0.25) settle as two half-stakes. result " +
+      "'pending' means the game is not graded yet — say so, do not guess. " +
+      "'unmatched' carries a reason (event_not_found, no_market_for_key, " +
+      "no_outcome_for_selection, ambiguous_selection, " +
+      "cannot_compute_at_line, invalid_bet): surface those rows. For a " +
+      "parlay pass legs (each with its own price); any lost leg loses it " +
+      "and pushed/voided legs drop out. Use propline_list_events or " +
+      "propline_get_scores to find event_id. Max 200 bets. Stateless. Free " +
+      "tier returns results as 'redacted'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        bets: {
+          type: "array",
+          maxItems: 200,
+          description:
+            "Bets to settle. A single bet uses the leg fields directly; a " +
+            "parlay sets legs.",
+          items: {
+            type: "object",
+            properties: {
+              ref: { type: "string", description: "Echoed back." },
+              stake: { type: "number", description: "Defaults to 1." },
+              sport_key: { type: "string" },
+              event_id: { type: ["string", "number"] },
+              market: { type: "string" },
+              selection: {
+                type: "string",
+                description:
+                  "Player for a prop, team for a game line, 'Over'/'Under' for a game total.",
+              },
+              side: { type: "string", description: "Over/Under/Yes/No for two-way markets." },
+              point: { type: "number", description: "The bettor's line." },
+              period: { type: "string", description: "Canonical period code (q1, h1, f5). Omit for full game." },
+              team: { type: "string", description: "Scope a totals bet to one team's total." },
+              bookmaker: { type: "string", description: "Optional book the bet was placed at." },
+              price: { type: "number", description: "American odds taken. Needed for payout." },
+              legs: {
+                type: "array",
+                maxItems: 20,
+                description: "Parlay legs; each has the single-bet fields above.",
+                items: { type: "object" },
+              },
+            },
+            additionalProperties: false,
+          },
+        },
+      },
+      required: ["bets"],
+      additionalProperties: false,
+    },
+    handler: (args) => client().settleBets(args.bets as unknown[]),
   },
   {
     name: "propline_price_sgp",
