@@ -413,6 +413,22 @@ export class PropLineClient {
   }
 
 
+  getMarketCoverage(
+    sportKey: string,
+    opts: { days?: number; periods?: boolean } = {}
+  ): Promise<unknown> {
+    return this.request(`/v1/coverage/markets`, {
+      sport: sportKey,
+      days: opts.days,
+      periods: opts.periods === undefined ? undefined : opts.periods ? "true" : "false",
+    });
+  }
+
+  getHistoryCoverage(sportKey: string): Promise<unknown> {
+    return this.request(`/v1/coverage/history`, { sport: sportKey });
+  }
+
+
   getFutures(sportKey: string): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/futures`);
   }

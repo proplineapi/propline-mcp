@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.54.1";
+export const VERSION = "0.55.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1221,14 +1221,16 @@ export const tools: ToolDef[] = [
     title: "Get referee card stats",
     description:
       "Free-tier endpoint. Card stats per referee: graded matches, yellow and " +
-      "red cards, cards per match, last match and next appointment. Premier " +
-      "League (soccer_epl) only today. Useful for: 'which EPL referee gives " +
+      "red cards, cards per match, last match and next appointment. 32 soccer " +
+      "leagues (Premier League, La Liga, Serie A, Bundesliga, Ligue 1, MLS, " +
+      "Championship, Eredivisie, Liga MX, Brasileirao, UEFA cups, Libertadores, " +
+      "Sudamericana and others); other sports 404 with available_sports. Useful for: 'which EPL referee gives " +
       "the most cards', 'who is refereeing Arsenal next' — check it before a " +
       "cards prop.",
     inputSchema: {
       type: "object",
       properties: {
-        sport_key: { type: "string", description: "soccer_epl (the only sport supported today)." },
+        sport_key: { type: "string", description: "A soccer league key, e.g. soccer_epl, soccer_la_liga, soccer_mls." },
         search: { type: "string", description: "Optional referee name (substring match)." },
         since: { type: "string", description: "Optional start date, YYYY-MM-DD." },
         until: { type: "string", description: "Optional end date, YYYY-MM-DD." },
@@ -1249,12 +1251,12 @@ export const tools: ToolDef[] = [
     description:
       "Free-tier endpoint. One referee's summary plus their matches, newest " +
       "first, with each team's yellow and red cards (null until graded) and " +
-      "upcoming appointments. Premier League (soccer_epl) only today. Get exact " +
+      "upcoming appointments. Same 32 soccer leagues as propline_get_referees. Get exact " +
       "names from propline_get_referees.",
     inputSchema: {
       type: "object",
       properties: {
-        sport_key: { type: "string", description: "soccer_epl (the only sport supported today)." },
+        sport_key: { type: "string", description: "A soccer league key, e.g. soccer_epl, soccer_la_liga, soccer_mls." },
         name: { type: "string", description: "Referee name, e.g. Michael Oliver." },
         since: { type: "string", description: "Optional start date, YYYY-MM-DD." },
         until: { type: "string", description: "Optional end date, YYYY-MM-DD." },
@@ -1269,6 +1271,51 @@ export const tools: ToolDef[] = [
         until: args.until as string | undefined,
         limit: args.limit as number | undefined,
       }),
+  },
+
+  {
+    name: "propline_get_market_coverage",
+    title: "Get market coverage by book",
+    description:
+      "Free-tier endpoint. Every market each book is pricing on a sport's games " +
+      "in the next N days, and on how many of those games. Returns the game " +
+      "count and, per book, game_lines and props entries {market, period, " +
+      "events, markets, last_update}. Useful for: 'which books have NFL player " +
+      "props posted', 'does FanDuel price this market yet'. Books post props at " +
+      "different times, so a low events count means not posted on every game yet.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "e.g. football_nfl, baseball_mlb." },
+        days: { type: "number", description: "Games starting in the next N days, 1-7. Defaults to 3." },
+        periods: { type: "boolean", description: "Include quarter / half / inning markets. Defaults to false." },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getMarketCoverage(args.sport_key as string, {
+        days: args.days as number | undefined,
+        periods: args.periods as boolean | undefined,
+      }),
+  },
+  {
+    name: "propline_get_history_coverage",
+    title: "Get odds history coverage by book",
+    description:
+      "Free-tier endpoint. When each book's odds history starts for a sport: " +
+      "history_start, game_lines_start, props_start, latest_event, event count, " +
+      "and whether the book is retired. Useful for: 'how far back do we have " +
+      "Fanatics MLB props'.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "e.g. baseball_mlb." },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) => client().getHistoryCoverage(args.sport_key as string),
   },
 
   {
