@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.53.0";
+export const VERSION = "0.54.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1216,7 +1216,61 @@ export const tools: ToolDef[] = [
         days: args.days as number | undefined,
         player: args.player as string | undefined,
       }),
+  },  {
+    name: "propline_get_referees",
+    title: "Get referee card stats",
+    description:
+      "Free-tier endpoint. Card stats per referee: graded matches, yellow and " +
+      "red cards, cards per match, last match and next appointment. Premier " +
+      "League (soccer_epl) only today. Useful for: 'which EPL referee gives " +
+      "the most cards', 'who is refereeing Arsenal next' — check it before a " +
+      "cards prop.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "soccer_epl (the only sport supported today)." },
+        search: { type: "string", description: "Optional referee name (substring match)." },
+        since: { type: "string", description: "Optional start date, YYYY-MM-DD." },
+        until: { type: "string", description: "Optional end date, YYYY-MM-DD." },
+      },
+      required: ["sport_key"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getReferees(args.sport_key as string, {
+        search: args.search as string | undefined,
+        since: args.since as string | undefined,
+        until: args.until as string | undefined,
+      }),
   },
+  {
+    name: "propline_get_referee_matches",
+    title: "Get a referee's matches",
+    description:
+      "Free-tier endpoint. One referee's summary plus their matches, newest " +
+      "first, with each team's yellow and red cards (null until graded) and " +
+      "upcoming appointments. Premier League (soccer_epl) only today. Get exact " +
+      "names from propline_get_referees.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string", description: "soccer_epl (the only sport supported today)." },
+        name: { type: "string", description: "Referee name, e.g. Michael Oliver." },
+        since: { type: "string", description: "Optional start date, YYYY-MM-DD." },
+        until: { type: "string", description: "Optional end date, YYYY-MM-DD." },
+        limit: { type: "number", description: "1-500. Defaults to 100." },
+      },
+      required: ["sport_key", "name"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getRefereeMatches(args.sport_key as string, args.name as string, {
+        since: args.since as string | undefined,
+        until: args.until as string | undefined,
+        limit: args.limit as number | undefined,
+      }),
+  },
+
   {
     name: "propline_get_event_stats",
     title: "Get event stats",

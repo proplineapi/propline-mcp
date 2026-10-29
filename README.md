@@ -48,6 +48,8 @@ The model uses these tools transparently:
 | `propline_get_golf_tournaments` | Golf tournaments with round data, by tour and season (free) |
 | `propline_get_injuries` | Current injury report for NFL, NCAAF, NBA, WNBA, NHL, MLB (free) |
 | `propline_get_injury_history` | Injury status changes over the last 1-90 days (free) |
+| `propline_get_referees` | Referee card stats — cards per match, last and next match (EPL, free) |
+| `propline_get_referee_matches` | One referee's matches with each team's cards (EPL, free) |
 | `propline_get_event_stats` | Raw box-score stats (free, book-agnostic) |
 | `propline_get_event_context` | Game conditions a prop settles under — probable pitchers, lineup flag, home-plate umpire, first-pitch weather (free) |
 | `propline_get_event_movement` | Line movement + steam detection (sharp-money signal across all books) from the tick history (Hobby+). `since` (e.g. `-6h`) measures from a moment; `include_book_ids` adds book ids. |
@@ -65,7 +67,7 @@ The model uses these tools transparently:
 
 ## Hosted endpoint (no install)
 
-The same 36 tools are served over **Streamable HTTP** at
+The same 41 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp

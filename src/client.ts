@@ -390,6 +390,28 @@ export class PropLineClient {
       player: opts.player,
     });
   }
+  getReferees(
+    sportKey: string,
+    opts: { search?: string; since?: string; until?: string } = {}
+  ): Promise<unknown> {
+    return this.request(`/v1/sports/${encodeURIComponent(sportKey)}/referees`, {
+      search: opts.search,
+      since: opts.since,
+      until: opts.until,
+    });
+  }
+
+  getRefereeMatches(
+    sportKey: string,
+    name: string,
+    opts: { since?: string; until?: string; limit?: number } = {}
+  ): Promise<unknown> {
+    return this.request(
+      `/v1/sports/${encodeURIComponent(sportKey)}/referees/${encodeURIComponent(name)}/matches`,
+      { since: opts.since, until: opts.until, limit: opts.limit }
+    );
+  }
+
 
   getFutures(sportKey: string): Promise<unknown> {
     return this.request(`/v1/sports/${sportKey}/futures`);
