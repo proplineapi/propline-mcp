@@ -211,6 +211,34 @@ export class PropLineClient {
     );
   }
 
+  /** Order-book depth history for the exchanges. Hobby+. */
+  getDepthHistory(
+    sportKey: string,
+    eventId: string | number,
+    opts: {
+      markets?: string;
+      bookmakers?: string;
+      from?: string;
+      to?: string;
+      interval?: string;
+      period?: string;
+      limit?: number;
+    } = {},
+  ): Promise<unknown> {
+    return this.request(
+      `/v1/sports/${sportKey}/events/${eventId}/odds/depth/history`,
+      {
+        markets: opts.markets,
+        bookmakers: opts.bookmakers,
+        from: opts.from,
+        to: opts.to,
+        interval: opts.interval,
+        period: opts.period,
+        limit: opts.limit === undefined ? undefined : String(opts.limit),
+      },
+    );
+  }
+
   /**
    * Grade placed bets against their closing lines (CLV). Hobby+.
    * See the propline_grade_clv tool description for the semantics that

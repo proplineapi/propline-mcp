@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.55.0";
+export const VERSION = "0.56.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -447,6 +447,49 @@ export const tools: ToolDef[] = [
           interval: args.interval as string | undefined,
           changesOnly: args.changes_only as boolean | undefined,
           period: args.period as string | undefined,
+        },
+      ),
+  },
+  {
+    name: "propline_get_depth_history",
+    title: "Get order-book depth history",
+    description:
+      "Hobby+ endpoint. Order-book depth history for one event on the " +
+      "exchanges (kalshi, polymarket, polymarket_us, prophetx): every " +
+      "recorded change of an outcome's best price, takeable size " +
+      "(liquidity, dollars) and the levels beyond it (depth: [{price, " +
+      "size}], best first). Use it to backtest with the size that was " +
+      "really there. Recorded from 2026-11-10. Paged: when next_from is " +
+      "set, call again with from=next_from. Free tier returns redacted " +
+      "structure.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        sport_key: { type: "string" },
+        event_id: { type: ["string", "number"] },
+        markets: { type: "string", description: "Comma-separated market keys (default h2h,spreads,totals)." },
+        bookmakers: { type: "string", description: "Comma-separated subset of kalshi, polymarket, polymarket_us, prophetx. Default all four." },
+        from: { type: "string", description: "ISO timestamp; states at or after. Pass next_from here to page." },
+        to: { type: "string", description: "ISO timestamp; states at or before." },
+        interval: { type: "string", enum: ["30s", "1m", "5m", "15m", "30m", "1h"], description: "Keep the last state per outcome per bucket." },
+        period: { type: "string", description: "Game-period filter; omitted = full game, 'all' = every period." },
+        limit: { type: "number", description: "States per page (default 5000, max 20000)." },
+      },
+      required: ["sport_key", "event_id"],
+      additionalProperties: false,
+    },
+    handler: (args) =>
+      client().getDepthHistory(
+        args.sport_key as string,
+        args.event_id as string | number,
+        {
+          markets: args.markets as string | undefined,
+          bookmakers: args.bookmakers as string | undefined,
+          from: args.from as string | undefined,
+          to: args.to as string | undefined,
+          interval: args.interval as string | undefined,
+          period: args.period as string | undefined,
+          limit: args.limit as number | undefined,
         },
       ),
   },
