@@ -613,6 +613,10 @@ export class PropLineClient {
     });
   }
 
+  getParlayLink(outcomeIds: string): Promise<unknown> {
+    return this.request("/v1/bet-links/parlay", { outcome_ids: outcomeIds });
+  }
+
   // ----- Webhooks (READ-ONLY on purpose) -----
   // Create is excluded because it returns the HMAC signing secret exactly
   // once — through MCP that lands in a model context window and whatever

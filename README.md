@@ -63,13 +63,14 @@ The model uses these tools transparently:
 | `propline_get_event_ev` | Pro: cross-book +EV with no-vig fair lines (`devig`: multiplicative or shin; `fair_source`: pick the anchor book(s), tried in order) |
 | `propline_get_event_projections` | Hobby+: market-implied consensus projection per (market, player) |
 | `propline_get_best_line` | Hobby+: cross-book line shopping — best price per (market, player, line) across all comparable books, `all_prices` sorted best-first; optional `bookmakers` filter |
+| `propline_get_parlay_link` | One bet-slip link with several legs at DraftKings, FanDuel or Fanatics, from PropLine outcome ids (the book may still refuse the combination) |
 | `propline_list_webhooks` | Streaming Lite+: list webhook subscriptions (read-only, secrets masked) |
 | `propline_get_webhook_deliveries` | Streaming Lite+: recent delivery attempts for a webhook — status, HTTP code, attempts, payload; `before_id` pages backwards. The "why isn't my webhook firing" tool |
 | `propline_create_free_api_key` | Sign the user up for a free personal key from inside the chat. Takes the email **the user gives**; the key is emailed to them (never returned), with a ready-made connector URL to reconnect. The only tool that is not read-only |
 
 ## Hosted endpoint (no install)
 
-The same 41 tools are served over **Streamable HTTP** at
+The same 42 tools are served over **Streamable HTTP** at
 
 ```
 https://mcp.prop-line.com/mcp

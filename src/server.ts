@@ -24,7 +24,7 @@ import { PropLineClient, PropLineHTTPError } from "./client.js";
 
 export { PropLineClient };
 
-export const VERSION = "0.56.0";
+export const VERSION = "0.57.0";
 
 // Shared public demo key. Baked in on purpose so `npx -y propline-mcp` works
 // with ZERO configuration — an AI agent can discover the server and answer
@@ -1883,6 +1883,30 @@ export const tools: ToolDef[] = [
           includeLinks: args.include_links as boolean | undefined,
         },
       ),
+  },
+  {
+    name: "propline_get_parlay_link",
+    title: "Get multi-leg bet-slip link",
+    description:
+      "One link that opens a sportsbook with several legs on the bet " +
+      "slip. Pass PropLine outcome ids (the outcome_id on " +
+      "propline_get_best_line price rows with include_links=true), 1-12, " +
+      "all at one book: DraftKings, FanDuel or Fanatics. Returns bet_link " +
+      "plus each leg's book ids. The link only LOADS the legs; the book " +
+      "may still refuse to combine them (some same-game parlays), so tell " +
+      "the user to check the slip. No prices; every tier.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        outcome_ids: {
+          type: "string",
+          description: "Comma-separated PropLine outcome ids, e.g. '16263784960,16263949931'.",
+        },
+      },
+      required: ["outcome_ids"],
+      additionalProperties: false,
+    },
+    handler: (args) => client().getParlayLink(String(args.outcome_ids)),
   },
   // -- Webhooks: READ-ONLY on purpose. Create returns the HMAC secret exactly
   // once (a credential in a model context); update/delete/test are
