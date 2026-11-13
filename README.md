@@ -2,6 +2,7 @@
 
 [![npm version](https://img.shields.io/npm/v/propline-mcp.svg)](https://www.npmjs.com/package/propline-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
+[![mcp.market](https://mcp.market/badge/proplineapi-propline-mcp.svg)](https://mcp.market/server/proplineapi-propline-mcp)
 
 Listed in the official [MCP Registry](https://registry.modelcontextprotocol.io) as `io.github.proplineapi/propline-mcp` — discoverable from Claude Code, Claude Desktop, and any MCP-aware client.
 
