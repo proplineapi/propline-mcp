@@ -68,6 +68,8 @@
   "overrides": {
     "qs": "^6.15.2",
     "esbuild": "^0.28.1",
-    "hono": "^4.13.5"
+    "hono": "^4.13.16",
+    "@hono/node-server": "^2.1.6",
+    "body-parser": "^2.4.0"
   }
 }
